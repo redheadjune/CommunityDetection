@@ -1,0 +1,773 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Welcome to CommunityDetection’s documentation! &mdash; CommunityDetection v0.1 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="CommunityDetection v0.1 documentation" href="#" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="#">CommunityDetection v0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="welcome-to-communitydetection-s-documentation">
+<h1>Welcome to CommunityDetection&#8217;s documentation!<a class="headerlink" href="#welcome-to-communitydetection-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<span class="target" id="module-CommunityDetection"></span><dl class="function">
+<dt id="io.open">
+<tt class="descclassname">io.</tt><tt class="descname">open</tt><big>(</big><em>file</em>, <em>mode=u'r'</em>, <em>buffering=None</em>, <em>encoding=None</em>, <em>errors=None</em>, <em>newline=None</em>, <em>closefd=True</em><big>)</big><a class="reference internal" href="_modules/io.html#open"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.open" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open file and return a stream. If the file cannot be opened, an IOError is
+raised.</p>
+<p>file is either a string giving the name (and the path if the file
+isn&#8217;t in the current working directory) of the file to be opened or an
+integer file descriptor of the file to be wrapped. (If a file
+descriptor is given, it is closed when the returned I/O object is
+closed, unless closefd is set to False.)</p>
+<p>mode is an optional string that specifies the mode in which the file
+is opened. It defaults to &#8216;r&#8217; which means open for reading in text
+mode.  Other common values are &#8216;w&#8217; for writing (truncating the file if
+it already exists), and &#8216;a&#8217; for appending (which on some Unix systems,
+means that all writes append to the end of the file regardless of the
+current seek position). In text mode, if encoding is not specified the
+encoding used is platform dependent. (For reading and writing raw
+bytes use binary mode and leave encoding unspecified.) The available
+modes are:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="13%" />
+<col width="88%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>Character</td>
+<td>Meaning</td>
+</tr>
+<tr><td>&#8216;r&#8217;</td>
+<td>open for reading (default)</td>
+</tr>
+<tr><td>&#8216;w&#8217;</td>
+<td>open for writing, truncating the file first</td>
+</tr>
+<tr><td>&#8216;a&#8217;</td>
+<td>open for writing, appending to the end of the file if it exists</td>
+</tr>
+<tr><td>&#8216;b&#8217;</td>
+<td>binary mode</td>
+</tr>
+<tr><td>&#8216;t&#8217;</td>
+<td>text mode (default)</td>
+</tr>
+<tr><td>&#8216;+&#8217;</td>
+<td>open a disk file for updating (reading and writing)</td>
+</tr>
+<tr><td>&#8216;U&#8217;</td>
+<td>universal newline mode (for backwards compatibility; unneeded
+for new code)</td>
+</tr>
+</tbody>
+</table>
+<p>The default mode is &#8216;rt&#8217; (open for reading text). For binary random
+access, the mode &#8216;w+b&#8217; opens and truncates the file to 0 bytes, while
+&#8216;r+b&#8217; opens the file without truncation.</p>
+<p>Python distinguishes between files opened in binary and text modes,
+even when the underlying operating system doesn&#8217;t. Files opened in
+binary mode (appending &#8216;b&#8217; to the mode argument) return contents as
+bytes objects without any decoding. In text mode (the default, or when
+&#8216;t&#8217; is appended to the mode argument), the contents of the file are
+returned as strings, the bytes having been first decoded using a
+platform-dependent encoding or using the specified encoding if given.</p>
+<p>buffering is an optional integer used to set the buffering policy.
+Pass 0 to switch buffering off (only allowed in binary mode), 1 to select
+line buffering (only usable in text mode), and an integer &gt; 1 to indicate
+the size of a fixed-size chunk buffer.  When no buffering argument is
+given, the default buffering policy works as follows:</p>
+<ul class="simple">
+<li>Binary files are buffered in fixed-size chunks; the size of the buffer
+is chosen using a heuristic trying to determine the underlying device&#8217;s
+&#8220;block size&#8221; and falling back on <cite>io.DEFAULT_BUFFER_SIZE</cite>.
+On many systems, the buffer will typically be 4096 or 8192 bytes long.</li>
+<li>&#8220;Interactive&#8221; text files (files for which isatty() returns True)
+use line buffering.  Other text files use the policy described above
+for binary files.</li>
+</ul>
+<p>encoding is the name of the encoding used to decode or encode the
+file. This should only be used in text mode. The default encoding is
+platform dependent, but any encoding supported by Python can be
+passed.  See the codecs module for the list of supported encodings.</p>
+<p>errors is an optional string that specifies how encoding errors are to
+be handled&#8212;this argument should not be used in binary mode. Pass
+&#8216;strict&#8217; to raise a ValueError exception if there is an encoding error
+(the default of None has the same effect), or pass &#8216;ignore&#8217; to ignore
+errors. (Note that ignoring encoding errors can lead to data loss.)
+See the documentation for codecs.register for a list of the permitted
+encoding error strings.</p>
+<p>newline controls how universal newlines works (it only applies to text
+mode). It can be None, &#8216;&#8217;, &#8216;n&#8217;, &#8216;r&#8217;, and &#8216;rn&#8217;.  It works as
+follows:</p>
+<ul class="simple">
+<li>On input, if newline is None, universal newlines mode is
+enabled. Lines in the input can end in &#8216;n&#8217;, &#8216;r&#8217;, or &#8216;rn&#8217;, and
+these are translated into &#8216;n&#8217; before being returned to the
+caller. If it is &#8216;&#8217;, universal newline mode is enabled, but line
+endings are returned to the caller untranslated. If it has any of
+the other legal values, input lines are only terminated by the given
+string, and the line ending is returned to the caller untranslated.</li>
+<li>On output, if newline is None, any &#8216;n&#8217; characters written are
+translated to the system default line separator, os.linesep. If
+newline is &#8216;&#8217;, no translation takes place. If newline is any of the
+other legal values, any &#8216;n&#8217; characters written are translated to
+the given string.</li>
+</ul>
+<p>If closefd is False, the underlying file descriptor will be kept open
+when the file is closed. This does not work when a file name is given
+and must be True in that case.</p>
+<p>open() returns a file object whose type depends on the mode, and
+through which the standard file operations such as reading and writing
+are performed. When open() is used to open a file in a text mode (&#8216;w&#8217;,
+&#8216;r&#8217;, &#8216;wt&#8217;, &#8216;rt&#8217;, etc.), it returns a TextIOWrapper. When used to open
+a file in a binary mode, the returned class varies: in read binary
+mode, it returns a BufferedReader; in write binary and append binary
+modes, it returns a BufferedWriter, and in read/write mode, it returns
+a BufferedRandom.</p>
+<p>It is also possible to use a string or bytearray as a file for both
+reading and writing. For strings StringIO can be used like a file
+opened in a text mode, and for bytes a BytesIO can be used like a file
+opened in a binary mode.</p>
+</dd></dl>
+
+<span class="target" id="module-io"></span><p>The io module provides the Python interfaces to stream handling. The
+builtin open function is defined in this module.</p>
+<p>At the top of the I/O hierarchy is the abstract base class IOBase. It
+defines the basic interface to a stream. Note, however, that there is no
+separation between reading and writing to streams; implementations are
+allowed to throw an IOError if they do not support a given operation.</p>
+<p>Extending IOBase is RawIOBase which deals simply with the reading and
+writing of raw bytes to a stream. FileIO subclasses RawIOBase to provide
+an interface to OS files.</p>
+<p>BufferedIOBase deals with buffering on a raw byte stream (RawIOBase). Its
+subclasses, BufferedWriter, BufferedReader, and BufferedRWPair buffer
+streams that are readable, writable, and both respectively.
+BufferedRandom provides a buffered interface to random access
+streams. BytesIO is a simple stream of in-memory bytes.</p>
+<p>Another IOBase subclass, TextIOBase, deals with the encoding and decoding
+of streams into text. TextIOWrapper, which extends it, is a buffered text
+interface to a buffered raw stream (<cite>BufferedIOBase</cite>). Finally, StringIO
+is a in-memory stream for text.</p>
+<p>Argument names are not part of the specification, and only the arguments
+of open() are intended to be used as keyword arguments.</p>
+<p>data:</p>
+<p>DEFAULT_BUFFER_SIZE</p>
+<blockquote>
+An int containing the default buffer size used by the module&#8217;s buffered
+I/O classes. open() uses the file&#8217;s blksize (as obtained by os.stat) if
+possible.</blockquote>
+<p>README.rst</p>
+<dl class="exception">
+<dt id="io.BlockingIOError">
+<em class="property">exception </em><tt class="descclassname">io.</tt><tt class="descname">BlockingIOError</tt><big>(</big><em>errno</em>, <em>strerror</em>, <em>characters_written=0</em><big>)</big><a class="reference internal" href="_modules/io.html#BlockingIOError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.BlockingIOError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exception raised when I/O would block on a non-blocking I/O stream.</p>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<tt class="descclassname">io.</tt><tt class="descname">open</tt><big>(</big><em>file</em>, <em>mode=u'r'</em>, <em>buffering=None</em>, <em>encoding=None</em>, <em>errors=None</em>, <em>newline=None</em>, <em>closefd=True</em><big>)</big><a class="reference internal" href="_modules/io.html#open"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Open file and return a stream. If the file cannot be opened, an IOError is
+raised.</p>
+<p>file is either a string giving the name (and the path if the file
+isn&#8217;t in the current working directory) of the file to be opened or an
+integer file descriptor of the file to be wrapped. (If a file
+descriptor is given, it is closed when the returned I/O object is
+closed, unless closefd is set to False.)</p>
+<p>mode is an optional string that specifies the mode in which the file
+is opened. It defaults to &#8216;r&#8217; which means open for reading in text
+mode.  Other common values are &#8216;w&#8217; for writing (truncating the file if
+it already exists), and &#8216;a&#8217; for appending (which on some Unix systems,
+means that all writes append to the end of the file regardless of the
+current seek position). In text mode, if encoding is not specified the
+encoding used is platform dependent. (For reading and writing raw
+bytes use binary mode and leave encoding unspecified.) The available
+modes are:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="13%" />
+<col width="88%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>Character</td>
+<td>Meaning</td>
+</tr>
+<tr><td>&#8216;r&#8217;</td>
+<td>open for reading (default)</td>
+</tr>
+<tr><td>&#8216;w&#8217;</td>
+<td>open for writing, truncating the file first</td>
+</tr>
+<tr><td>&#8216;a&#8217;</td>
+<td>open for writing, appending to the end of the file if it exists</td>
+</tr>
+<tr><td>&#8216;b&#8217;</td>
+<td>binary mode</td>
+</tr>
+<tr><td>&#8216;t&#8217;</td>
+<td>text mode (default)</td>
+</tr>
+<tr><td>&#8216;+&#8217;</td>
+<td>open a disk file for updating (reading and writing)</td>
+</tr>
+<tr><td>&#8216;U&#8217;</td>
+<td>universal newline mode (for backwards compatibility; unneeded
+for new code)</td>
+</tr>
+</tbody>
+</table>
+<p>The default mode is &#8216;rt&#8217; (open for reading text). For binary random
+access, the mode &#8216;w+b&#8217; opens and truncates the file to 0 bytes, while
+&#8216;r+b&#8217; opens the file without truncation.</p>
+<p>Python distinguishes between files opened in binary and text modes,
+even when the underlying operating system doesn&#8217;t. Files opened in
+binary mode (appending &#8216;b&#8217; to the mode argument) return contents as
+bytes objects without any decoding. In text mode (the default, or when
+&#8216;t&#8217; is appended to the mode argument), the contents of the file are
+returned as strings, the bytes having been first decoded using a
+platform-dependent encoding or using the specified encoding if given.</p>
+<p>buffering is an optional integer used to set the buffering policy.
+Pass 0 to switch buffering off (only allowed in binary mode), 1 to select
+line buffering (only usable in text mode), and an integer &gt; 1 to indicate
+the size of a fixed-size chunk buffer.  When no buffering argument is
+given, the default buffering policy works as follows:</p>
+<ul class="simple">
+<li>Binary files are buffered in fixed-size chunks; the size of the buffer
+is chosen using a heuristic trying to determine the underlying device&#8217;s
+&#8220;block size&#8221; and falling back on <cite>io.DEFAULT_BUFFER_SIZE</cite>.
+On many systems, the buffer will typically be 4096 or 8192 bytes long.</li>
+<li>&#8220;Interactive&#8221; text files (files for which isatty() returns True)
+use line buffering.  Other text files use the policy described above
+for binary files.</li>
+</ul>
+<p>encoding is the name of the encoding used to decode or encode the
+file. This should only be used in text mode. The default encoding is
+platform dependent, but any encoding supported by Python can be
+passed.  See the codecs module for the list of supported encodings.</p>
+<p>errors is an optional string that specifies how encoding errors are to
+be handled&#8212;this argument should not be used in binary mode. Pass
+&#8216;strict&#8217; to raise a ValueError exception if there is an encoding error
+(the default of None has the same effect), or pass &#8216;ignore&#8217; to ignore
+errors. (Note that ignoring encoding errors can lead to data loss.)
+See the documentation for codecs.register for a list of the permitted
+encoding error strings.</p>
+<p>newline controls how universal newlines works (it only applies to text
+mode). It can be None, &#8216;&#8217;, &#8216;n&#8217;, &#8216;r&#8217;, and &#8216;rn&#8217;.  It works as
+follows:</p>
+<ul class="simple">
+<li>On input, if newline is None, universal newlines mode is
+enabled. Lines in the input can end in &#8216;n&#8217;, &#8216;r&#8217;, or &#8216;rn&#8217;, and
+these are translated into &#8216;n&#8217; before being returned to the
+caller. If it is &#8216;&#8217;, universal newline mode is enabled, but line
+endings are returned to the caller untranslated. If it has any of
+the other legal values, input lines are only terminated by the given
+string, and the line ending is returned to the caller untranslated.</li>
+<li>On output, if newline is None, any &#8216;n&#8217; characters written are
+translated to the system default line separator, os.linesep. If
+newline is &#8216;&#8217;, no translation takes place. If newline is any of the
+other legal values, any &#8216;n&#8217; characters written are translated to
+the given string.</li>
+</ul>
+<p>If closefd is False, the underlying file descriptor will be kept open
+when the file is closed. This does not work when a file name is given
+and must be True in that case.</p>
+<p>open() returns a file object whose type depends on the mode, and
+through which the standard file operations such as reading and writing
+are performed. When open() is used to open a file in a text mode (&#8216;w&#8217;,
+&#8216;r&#8217;, &#8216;wt&#8217;, &#8216;rt&#8217;, etc.), it returns a TextIOWrapper. When used to open
+a file in a binary mode, the returned class varies: in read binary
+mode, it returns a BufferedReader; in write binary and append binary
+modes, it returns a BufferedWriter, and in read/write mode, it returns
+a BufferedRandom.</p>
+<p>It is also possible to use a string or bytearray as a file for both
+reading and writing. For strings StringIO can be used like a file
+opened in a text mode, and for bytes a BytesIO can be used like a file
+opened in a binary mode.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="io.IOBase">
+<em class="property">class </em><tt class="descclassname">io.</tt><tt class="descname">IOBase</tt><a class="reference internal" href="_modules/io.html#IOBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.IOBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>The abstract base class for all I/O classes, acting on streams of
+bytes. There is no public constructor.</p>
+<p>This class provides dummy implementations for many methods that
+derived classes can override selectively; the default implementations
+represent a file that cannot be read, written or seeked.</p>
+<p>Even though IOBase does not declare read, readinto, or write because
+their signatures will vary, implementations and clients should
+consider those methods part of the interface. Also, implementations
+may raise a IOError when operations they do not support are called.</p>
+<p>The basic type used for binary data read from or written to a file is
+bytes. bytearrays are accepted too, and in some cases (such as
+readinto) needed. Text I/O classes work with str data.</p>
+<p>Note that calling any method (even inquiries) on a closed stream is
+undefined. Implementations may raise IOError in this case.</p>
+<p>IOBase (and its subclasses) support the iterator protocol, meaning
+that an IOBase object can be iterated over yielding the lines in a
+stream.</p>
+<p>IOBase also supports the <tt class="xref std std-keyword docutils literal"><span class="pre">with</span></tt> statement. In this example,
+fp is closed after the suite of the with statment is complete:</p>
+<dl class="docutils">
+<dt>with open(&#8216;spam.txt&#8217;, &#8216;r&#8217;) as fp:</dt>
+<dd>fp.write(&#8216;Spam and eggs!&#8217;)</dd>
+</dl>
+<dl class="method">
+<dt id="io.IOBase.close">
+<tt class="descname">close</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/io.html#IOBase.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.IOBase.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flush and close the IO object.</p>
+<p>This method has no effect if the file is already closed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="io.IOBase.closed">
+<tt class="descname">closed</tt><a class="reference internal" href="_modules/io.html#IOBase.closed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.IOBase.closed" title="Permalink to this definition">¶</a></dt>
+<dd><p>closed: bool.  True iff the file has been closed.</p>
+<p>For backwards compatibility, this is a property, not a predicate.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="io.IOBase.fileno">
+<tt class="descname">fileno</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/io.html#IOBase.fileno"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.IOBase.fileno" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns underlying file descriptor if one exists.</p>
+<p>An IOError is raised if the IO object does not use a file descriptor.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="io.IOBase.flush">
+<tt class="descname">flush</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/io.html#IOBase.flush"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.IOBase.flush" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flush write buffers, if applicable.</p>
+<p>This is not implemented for read-only and non-blocking streams.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="io.IOBase.isatty">
+<tt class="descname">isatty</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/io.html#IOBase.isatty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.IOBase.isatty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return whether this is an &#8216;interactive&#8217; stream.</p>
+<p>Return False if it can&#8217;t be determined.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="io.IOBase.readable">
+<tt class="descname">readable</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/io.html#IOBase.readable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.IOBase.readable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return whether object was opened for reading.</p>
+<p>If False, read() will raise IOError.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="io.IOBase.readline">
+<tt class="descname">readline</tt><big>(</big><em>limit=-1</em><big>)</big><a class="reference internal" href="_modules/io.html#IOBase.readline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.IOBase.readline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read and return a line from the stream.</p>
+<p>If limit is specified, at most limit bytes will be read.</p>
+<p>The line terminator is always b&#8217;n&#8217; for binary files; for text
+files, the newlines argument to open can be used to select the line
+terminator(s) recognized.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="io.IOBase.readlines">
+<tt class="descname">readlines</tt><big>(</big><em>hint=None</em><big>)</big><a class="reference internal" href="_modules/io.html#IOBase.readlines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.IOBase.readlines" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of lines from the stream.</p>
+<p>hint can be specified to control the number of lines read: no more
+lines will be read if the total size (in bytes/characters) of all
+lines so far exceeds hint.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="io.IOBase.seek">
+<tt class="descname">seek</tt><big>(</big><em>pos</em>, <em>whence=0</em><big>)</big><a class="reference internal" href="_modules/io.html#IOBase.seek"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.IOBase.seek" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change stream position.</p>
+<p>Change the stream position to byte offset offset. offset is
+interpreted relative to the position indicated by whence.  Values
+for whence are:</p>
+<ul class="simple">
+<li>0 &#8211; start of stream (the default); offset should be zero or positive</li>
+<li>1 &#8211; current stream position; offset may be negative</li>
+<li>2 &#8211; end of stream; offset is usually negative</li>
+</ul>
+<p>Return the new absolute position.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="io.IOBase.seekable">
+<tt class="descname">seekable</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/io.html#IOBase.seekable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.IOBase.seekable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return whether object supports random access.</p>
+<p>If False, seek(), tell() and truncate() will raise IOError.
+This method may need to do a test seek().</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="io.IOBase.tell">
+<tt class="descname">tell</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/io.html#IOBase.tell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.IOBase.tell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return current stream position.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="io.IOBase.truncate">
+<tt class="descname">truncate</tt><big>(</big><em>pos=None</em><big>)</big><a class="reference internal" href="_modules/io.html#IOBase.truncate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.IOBase.truncate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Truncate file to size bytes.</p>
+<p>Size defaults to the current IO position as reported by tell().  Return
+the new size.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="io.IOBase.writable">
+<tt class="descname">writable</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/io.html#IOBase.writable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.IOBase.writable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return whether object was opened for writing.</p>
+<p>If False, write() and truncate() will raise IOError.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="io.RawIOBase">
+<em class="property">class </em><tt class="descclassname">io.</tt><tt class="descname">RawIOBase</tt><a class="reference internal" href="_modules/io.html#RawIOBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.RawIOBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for raw binary I/O.</p>
+<dl class="method">
+<dt id="io.RawIOBase.read">
+<tt class="descname">read</tt><big>(</big><em>n=-1</em><big>)</big><a class="reference internal" href="_modules/io.html#RawIOBase.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.RawIOBase.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read and return up to n bytes.</p>
+<p>Returns an empty bytes array on EOF, or None if the object is
+set not to block and has no data to read.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="io.RawIOBase.readall">
+<tt class="descname">readall</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/io.html#RawIOBase.readall"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.RawIOBase.readall" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read until EOF, using multiple read() call.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="io.RawIOBase.readinto">
+<tt class="descname">readinto</tt><big>(</big><em>b</em><big>)</big><a class="reference internal" href="_modules/io.html#RawIOBase.readinto"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.RawIOBase.readinto" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read up to len(b) bytes into b.</p>
+<p>Returns number of bytes read (0 for EOF), or None if the object
+is set not to block as has no data to read.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="io.RawIOBase.write">
+<tt class="descname">write</tt><big>(</big><em>b</em><big>)</big><a class="reference internal" href="_modules/io.html#RawIOBase.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.RawIOBase.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the given buffer to the IO stream.</p>
+<p>Returns the number of bytes written, which may be less than len(b).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="io.FileIO">
+<em class="property">class </em><tt class="descclassname">io.</tt><tt class="descname">FileIO</tt><big>(</big><em>name</em>, <em>mode=u'r'</em>, <em>closefd=True</em><big>)</big><a class="reference internal" href="_modules/io.html#FileIO"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.FileIO" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raw I/O implementation for OS files.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="io.BytesIO">
+<em class="property">class </em><tt class="descclassname">io.</tt><tt class="descname">BytesIO</tt><a class="reference internal" href="_modules/io.html#BytesIO"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.BytesIO" title="Permalink to this definition">¶</a></dt>
+<dd><p>BytesIO([buffer]) -&gt; object</p>
+<p>Create a buffered I/O implementation using an in-memory bytes
+buffer, ready for reading and writing.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="io.StringIO">
+<em class="property">class </em><tt class="descclassname">io.</tt><tt class="descname">StringIO</tt><big>(</big><em>initial_value=u''</em>, <em>encoding=u'utf-8'</em>, <em>errors=u'strict'</em>, <em>newline=u'n'</em><big>)</big><a class="reference internal" href="_modules/io.html#StringIO"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.StringIO" title="Permalink to this definition">¶</a></dt>
+<dd><p>An in-memory stream for text. The initial_value argument sets the
+value of object. The other arguments are like those of TextIOWrapper&#8217;s
+constructor.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="io.BufferedIOBase">
+<em class="property">class </em><tt class="descclassname">io.</tt><tt class="descname">BufferedIOBase</tt><a class="reference internal" href="_modules/io.html#BufferedIOBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.BufferedIOBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for buffered IO objects.</p>
+<p>The main difference with RawIOBase is that the read() method
+supports omitting the size argument, and does not have a default
+implementation that defers to readinto().</p>
+<p>In addition, read(), readinto() and write() may raise
+BlockingIOError if the underlying raw stream is in non-blocking
+mode and not ready; unlike their raw counterparts, they will never
+return None.</p>
+<p>A typical implementation should not inherit from a RawIOBase
+implementation, but wrap one.</p>
+<dl class="method">
+<dt id="io.BufferedIOBase.read">
+<tt class="descname">read</tt><big>(</big><em>n=None</em><big>)</big><a class="reference internal" href="_modules/io.html#BufferedIOBase.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.BufferedIOBase.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read and return up to n bytes.</p>
+<p>If the argument is omitted, None, or negative, reads and
+returns all data until EOF.</p>
+<p>If the argument is positive, and the underlying raw stream is
+not &#8216;interactive&#8217;, multiple raw reads may be issued to satisfy
+the byte count (unless EOF is reached first).  But for
+interactive raw streams (XXX and for pipes?), at most one raw
+read will be issued, and a short result does not imply that
+EOF is imminent.</p>
+<p>Returns an empty bytes array on EOF.</p>
+<p>Raises BlockingIOError if the underlying raw stream has no
+data at the moment.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="io.BufferedIOBase.readinto">
+<tt class="descname">readinto</tt><big>(</big><em>b</em><big>)</big><a class="reference internal" href="_modules/io.html#BufferedIOBase.readinto"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.BufferedIOBase.readinto" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read up to len(b) bytes into b.</p>
+<p>Like read(), this may issue multiple reads to the underlying raw
+stream, unless the latter is &#8216;interactive&#8217;.</p>
+<p>Returns the number of bytes read (0 for EOF).</p>
+<p>Raises BlockingIOError if the underlying raw stream has no
+data at the moment.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="io.BufferedIOBase.write">
+<tt class="descname">write</tt><big>(</big><em>b</em><big>)</big><a class="reference internal" href="_modules/io.html#BufferedIOBase.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.BufferedIOBase.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the given buffer to the IO stream.</p>
+<p>Return the number of bytes written, which is never less than
+len(b).</p>
+<p>Raises BlockingIOError if the buffer is full and the
+underlying raw stream cannot accept more data at the moment.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="io.BufferedReader">
+<em class="property">class </em><tt class="descclassname">io.</tt><tt class="descname">BufferedReader</tt><big>(</big><em>raw</em>, <em>buffer_size=8192</em><big>)</big><a class="reference internal" href="_modules/io.html#BufferedReader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.BufferedReader" title="Permalink to this definition">¶</a></dt>
+<dd><p>BufferedReader(raw[, buffer_size])</p>
+<p>A buffer for a readable, sequential BaseRawIO object.</p>
+<p>The constructor creates a BufferedReader for the given readable raw
+stream and buffer_size. If buffer_size is omitted, DEFAULT_BUFFER_SIZE
+is used.</p>
+<dl class="method">
+<dt id="io.BufferedReader.peek">
+<tt class="descname">peek</tt><big>(</big><em>n=0</em><big>)</big><a class="reference internal" href="_modules/io.html#BufferedReader.peek"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.BufferedReader.peek" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns buffered bytes without advancing the position.</p>
+<p>The argument indicates a desired minimal number of bytes; we
+do at most one raw read to satisfy it.  We never return more
+than self.buffer_size.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="io.BufferedReader.read">
+<tt class="descname">read</tt><big>(</big><em>n=None</em><big>)</big><a class="reference internal" href="_modules/io.html#BufferedReader.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.BufferedReader.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read n bytes.</p>
+<p>Returns exactly n bytes of data unless the underlying raw IO
+stream reaches EOF or if the call would block in non-blocking
+mode. If n is negative, read until EOF or until read() would
+block.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="io.BufferedReader.read1">
+<tt class="descname">read1</tt><big>(</big><em>n</em><big>)</big><a class="reference internal" href="_modules/io.html#BufferedReader.read1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.BufferedReader.read1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads up to n bytes, with at most one read() system call.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="io.BufferedWriter">
+<em class="property">class </em><tt class="descclassname">io.</tt><tt class="descname">BufferedWriter</tt><big>(</big><em>raw</em>, <em>buffer_size=8192</em>, <em>max_buffer_size=None</em><big>)</big><a class="reference internal" href="_modules/io.html#BufferedWriter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.BufferedWriter" title="Permalink to this definition">¶</a></dt>
+<dd><p>A buffer for a writeable sequential RawIO object.</p>
+<p>The constructor creates a BufferedWriter for the given writeable raw
+stream. If the buffer_size is not given, it defaults to
+DEAFULT_BUFFER_SIZE. If max_buffer_size is omitted, it defaults to
+twice the buffer size.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="io.BufferedRWPair">
+<em class="property">class </em><tt class="descclassname">io.</tt><tt class="descname">BufferedRWPair</tt><big>(</big><em>reader</em>, <em>writer</em>, <em>buffer_size=8192</em>, <em>max_buffer_size=None</em><big>)</big><a class="reference internal" href="_modules/io.html#BufferedRWPair"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.BufferedRWPair" title="Permalink to this definition">¶</a></dt>
+<dd><p>A buffered reader and writer object together.</p>
+<p>A buffered reader object and buffered writer object put together to
+form a sequential IO object that can read and write. This is typically
+used with a socket or two-way pipe.</p>
+<p>reader and writer are RawIOBase objects that are readable and
+writeable respectively. If the buffer_size is omitted it defaults to
+DEFAULT_BUFFER_SIZE. The max_buffer_size (for the buffered writer)
+defaults to twice the buffer size.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="io.BufferedRandom">
+<em class="property">class </em><tt class="descclassname">io.</tt><tt class="descname">BufferedRandom</tt><big>(</big><em>raw</em>, <em>buffer_size=8192</em>, <em>max_buffer_size=None</em><big>)</big><a class="reference internal" href="_modules/io.html#BufferedRandom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.BufferedRandom" title="Permalink to this definition">¶</a></dt>
+<dd><p>A buffered interface to random access streams.</p>
+<p>The constructor creates a reader and writer for a seekable stream,
+raw, given in the first argument. If the buffer_size is omitted it
+defaults to DEFAULT_BUFFER_SIZE. The max_buffer_size (for the buffered
+writer) defaults to twice the buffer size.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="io.TextIOBase">
+<em class="property">class </em><tt class="descclassname">io.</tt><tt class="descname">TextIOBase</tt><a class="reference internal" href="_modules/io.html#TextIOBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.TextIOBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for text I/O.</p>
+<p>This class provides a character and line based interface to stream
+I/O. There is no readinto method because Python&#8217;s character strings
+are immutable. There is no public constructor.</p>
+<dl class="attribute">
+<dt id="io.TextIOBase.encoding">
+<tt class="descname">encoding</tt><a class="reference internal" href="_modules/io.html#TextIOBase.encoding"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.TextIOBase.encoding" title="Permalink to this definition">¶</a></dt>
+<dd><p>Subclasses should override.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="io.TextIOBase.newlines">
+<tt class="descname">newlines</tt><a class="reference internal" href="_modules/io.html#TextIOBase.newlines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.TextIOBase.newlines" title="Permalink to this definition">¶</a></dt>
+<dd><p>Line endings translated so far.</p>
+<p>Only line endings translated during reading are considered.</p>
+<p>Subclasses should override.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="io.TextIOBase.read">
+<tt class="descname">read</tt><big>(</big><em>n=-1</em><big>)</big><a class="reference internal" href="_modules/io.html#TextIOBase.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.TextIOBase.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read at most n characters from stream.</p>
+<p>Read from underlying buffer until we have n characters or we hit EOF.
+If n is negative or omitted, read until EOF.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="io.TextIOBase.readline">
+<tt class="descname">readline</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/io.html#TextIOBase.readline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.TextIOBase.readline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read until newline or EOF.</p>
+<p>Returns an empty string if EOF is hit immediately.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="io.TextIOBase.truncate">
+<tt class="descname">truncate</tt><big>(</big><em>pos=None</em><big>)</big><a class="reference internal" href="_modules/io.html#TextIOBase.truncate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.TextIOBase.truncate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Truncate size to pos.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="io.TextIOBase.write">
+<tt class="descname">write</tt><big>(</big><em>s</em><big>)</big><a class="reference internal" href="_modules/io.html#TextIOBase.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.TextIOBase.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write string s to stream.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="io.TextIOWrapper">
+<em class="property">class </em><tt class="descclassname">io.</tt><tt class="descname">TextIOWrapper</tt><big>(</big><em>buffer</em>, <em>encoding=None</em>, <em>errors=None</em>, <em>newline=None</em>, <em>line_buffering=False</em><big>)</big><a class="reference internal" href="_modules/io.html#TextIOWrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#io.TextIOWrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Character and line based layer over a BufferedIOBase object, buffer.</p>
+<p>encoding gives the name of the encoding that the stream will be
+decoded or encoded with. It defaults to locale.getpreferredencoding.</p>
+<p>errors determines the strictness of encoding and decoding (see the
+codecs.register) and defaults to &#8220;strict&#8221;.</p>
+<p>newline can be None, &#8216;&#8217;, &#8216;n&#8217;, &#8216;r&#8217;, or &#8216;rn&#8217;.  It controls the
+handling of line endings. If it is None, universal newlines is
+enabled.  With this enabled, on input, the lines endings &#8216;n&#8217;, &#8216;r&#8217;,
+or &#8216;rn&#8217; are translated to &#8216;n&#8217; before being returned to the
+caller. Conversely, on output, &#8216;n&#8217; is translated to the system
+default line separator, os.linesep. If newline is any other of its
+legal values, that newline becomes the newline when the file is read
+and it is returned untranslated. On output, &#8216;n&#8217; is converted to the
+newline.</p>
+<p>If line_buffering is True, a call to flush is implied when a call to
+write contains a newline character.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
+<li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
+<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Welcome to CommunityDetection&#8217;s documentation!</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="#">CommunityDetection v0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, June Andrews.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.1.
+    </div>
+  </body>
+</html>

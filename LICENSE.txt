@@ -1,1 +1,3 @@
+(c) 2010 - 2012 June Andrews, Cornell University
+
 by June Andrews imports where noted

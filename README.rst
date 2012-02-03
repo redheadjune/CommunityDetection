@@ -1,4 +1,6 @@
 =================
+Community Library
+=================
 
 Community Library is a cumulation of data, known methods of community detection
 on that data, developed methods, and experimental scripts for properties and
