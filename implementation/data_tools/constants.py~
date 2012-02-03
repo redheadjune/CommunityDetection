@@ -1,5 +1,0 @@
-# -*- coding: utf-8 -*-
-
-DATA_PATH = "../data/"
-
-KARATE = DATA_PATH + "KarateClub/karate_club_edges.txt"
