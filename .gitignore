@@ -1,0 +1,14 @@
+# Data that can be sourced elsewhere#
+#####################################
+implementation/data/*
+!.gitignore
+
+# Packages #
+############
+dist/*
+!.gitignore
+
+# artifacts#
+############
+*.~
+*.pyc

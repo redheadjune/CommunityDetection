@@ -1,0 +1,20 @@
+=================
+Community Library
+=================
+
+Community Library is a cumulation of data, known methods of community detection
+on that data, developed methods, and experimental scripts for properties and
+methods.  In particular known used methods include the Louvain Algorithm for
+modularity maximization, JTODO for spectral decomposition, JTODO for cluster
+comparison.... Developed methods include the Louvain Algorithm for linearity
+maximization, JTODO expansion, JTODO parallel implementation.
+
+
+
+
+Conributors:
+June Andrews and John Hopcroft for ideas
+June Andrews for all new code
+JTODO for the modularity code
+JTODO for the spectral method code
+
