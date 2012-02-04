@@ -25,7 +25,10 @@ def karate_club_graph():
 
     Requires
     --------
-    SNAP formulated data file: www-personal.umich.edu/~mejn/netdata/karate.zip
+    Formulated data file: www-personal.umich.edu/~mejn/netdata/karate.zip
+    Data acquired by W. W. Zachary, An information flow model for conflict and
+    fission in small groups, Joirnal of Anthropological REsearch 33, 452-473
+    (1977)
 
     Returns
     -------
