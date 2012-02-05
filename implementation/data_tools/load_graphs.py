@@ -70,7 +70,7 @@ def load_graph(path):
             n = int(n)
             m = int(m)
             nodes.update([n, m])
-            edges.append((n, m))
+            edges.append((n, m, {'weight': 1.}))
 
     gfile.close()
     
