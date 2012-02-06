@@ -31,7 +31,7 @@ class Bar :
     
     """
     
-    def __init__(self, graph):
+    def __init__(self, graph, numedges, __A, __B, __C):
         """ Creates a set of bottles that each contain 1 node
         """
         self.bottles = {}
@@ -39,6 +39,10 @@ class Bar :
         self.intedges = 0.
         self.idealint = 0.
         self.extedges = 0.
+        self.idealext = float(numedges)
+        self.__A = __A
+        self.__B = __B
+        self.__C = __C
         for n in graph:
             self.bottles[n] = Bottle(n, graph, [n])
             self.intedges += self.bottles[n].intedges
@@ -49,10 +53,17 @@ class Bar :
         self.s = len(self.bottles)
         
     def __str__(self):
-        return "Bar with internal edges: "+ str(self.intedges) + "\n" + \
-               "         external edges: "+ str(self.extedges) + "\n" + \
-               "         ideal edges: "+ str(self.idealint) + "\n" + \
-               "         non-empty bottles: "+ str(self.s) + "\n"
+        barstr =  "Bar with internal edges: "+ str(self.intedges) + "\n" + \
+                  "         external edges: "+ str(self.extedges) + "\n" + \
+                  "         ideal edges: "+ str(self.idealint) + "\n" + \
+                  "         non-empty bottles: "+ str(self.s) + "\n" 
+                 # "         a: " + str(__A) + " b: " + str(__B)+" c: "+str(__C)
+        
+        """          
+        for b in self.bottles:
+            barstr += str(self.bottles[b])
+        """    
+        return barstr
         
     def test_swap(self, graph, n, b1, b2):
         """Tests the changes that would occur moving n from b1 to b2
@@ -66,21 +77,13 @@ class Bar :
         if n not in b1.contains:
             raise Exception("tried to test an invalid move of node from bottle")
         
-        aint = self.intedges
-        aideal = self.idealint
-        aext = self.extedges
-        a_s = self.s
-        
+        stay = self.lin_metric()
         swap(graph, n, b1, b2)
         
-        bint = self.intedges
-        bideal = self.idealint
-        bext = self.extedges
-        b_s = self.s
-        
+        go = self.lin_metric()
         swap(graph, n, b2, b1)
         
-        return (aint/aideal - bint/bideal), (aext - bext), (a_s - b_s)
+        return stay - go
         
     def swap(self, graph, n, b1, b2):
         """ Swaps the node n from bottle b1 to b2
@@ -91,10 +94,10 @@ class Bar :
         
         b1.remove_member(graph, b)
         if b1.size == 0:
-            self.size -= 1
+            self.s -= 1
             
         if b2.size == 0:
-            self.size += 1
+            self.s += 1
         b2.add_member(graph, b)
         
         self.ntob[n] = b2.name
@@ -115,13 +118,24 @@ class Bar :
         """
         return list(set([self.ntob[m] for m in graph.neighbor_iter(n)]))
         
+    
+    def nodes_to_bottles(self):
+        """Creates the mapping of nodes of the graph to their storage bottles.
+        """
+        mapping = {}
+        for b in self.bottles.values():
+            for n in b.contains:
+                mapping[n] = b.name
+                
+        return mapping
         
-    def lin_metric(self, a, b, c):
+        
+    def lin_metric(self):
         """Returns the current metric evaluation of Bar
         """
-        return a * self.intedges / self.idealint \
-               - b * self.extedges \
-               - c * self.s
+        return self.__A * self.intedges / self.idealint \
+               - self.__B * self.extedges / self.idealext \
+               - self.__C * self.s
 
 class Bottle :
     """ Bottle is a group of nodes tenatively put together.
