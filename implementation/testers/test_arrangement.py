@@ -45,13 +45,13 @@ def test_bar():
     
     print "Testing initialization"
     fgraph = CD.football_graph()
-    b = CD.Bar(fgraph)
+    b = CD.Bar(fgraph, 1226, 1., 1., 1.)
     check_bar(b, 0, 1226, 115, 0)
     
     print "Testing possible swap"
     
     
-    print "Testing"
+    print "JTODO: Testing"
     
     
 def check_bar(b, intedges, extedges, s, idealint):

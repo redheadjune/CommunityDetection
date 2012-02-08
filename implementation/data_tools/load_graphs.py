@@ -75,7 +75,12 @@ def load_graph(path):
     gfile.close()
     
     graph = nx.Graph()
-    graph.add_nodes_from(nodes)
+    graph.add_nodes_from(nodes, size=1.)
     graph.add_edges_from(edges)
+    
+    # remove self edges
+    for n in graph.nodes():
+        if graph.has_edge(n, n):
+            graph.remove_edge(n, n)
     
     return graph
