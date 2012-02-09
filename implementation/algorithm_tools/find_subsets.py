@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
 
+"""This is by far an incomplete module
+"""
+
 def find_clique4(graph, n, size):
     """ Finds a clique in the graph of the given size containing n
     """

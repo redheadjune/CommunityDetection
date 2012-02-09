@@ -111,21 +111,21 @@ class Bar :
             
         deltasize = graph.node[n]['size']
         itop = self.intedges - 2 * en[bestbname]
-        ibottom = self.idealint - self.change_ideal(bhome.size, -deltasize)
+        ibottom = self.idealint + self.change_ideal(bhome.size, -deltasize)
         
         for bneighbor in en.keys():
-            currentsize = self.bottles[bneighbor].size
-            amod = self.__A \
-                   * (itop + 2 * en[bneighbor]) \
-                   / (ibottom + self.change_ideal(currentsize, deltasize)) \
-                   - ibefore
-            improvement = amod \
-                          - bmod * (en[bhomename] - en[bneighbor])\
-                          - cmod
-            
-            if improvement > bestimprovement:
-                bestbname = bneighbor
-                bestimprovement = improvement
+            if bneighbor != bhomename:
+                currentsize = self.bottles[bneighbor].size
+                newitop = itop + 2 * en[bneighbor]
+                newibottom = ibottom + self.change_ideal(currentsize, deltasize)
+                
+                improvement = self.__A * newitop / newibottom - ibefore\
+                              - bmod * (en[bhomename] - en[bneighbor])\
+                              - cmod
+                       
+                if improvement > bestimprovement:
+                    bestbname = bneighbor
+                    bestimprovement = improvement
         
         return bestbname
         

@@ -3,7 +3,8 @@
 """
 This module implements community detection.
 """
-__all__ = ["partition_at_level", "modularity", "best_partition", "generate_dendogram", "induced_graph"]
+__all__ = ["partition_at_level", "modularity", "modularity_run",
+           "generate_dendogram", "induced_graph"]
 __author__ = """Thomas Aynaud (thomas.aynaud@lip6.fr)"""
 #    Copyright (C) 2009 by
 #    Thomas Aynaud <thomas.aynaud@lip6.fr>
@@ -45,7 +46,8 @@ def partition_at_level(dendogram, level) :
 
     See Also
     --------
-    best_partition which directly combines partition_at_level and generate_dendogram to obtain the partition of highest modularity
+    modularity_run which directly combines partition_at_level and
+    generate_dendogram to obtain the partition of highest modularity
 
     Examples
     --------
@@ -92,7 +94,7 @@ def modularity(partition, graph) :
     Examples
     --------
     >>> G=nx.erdos_renyi_graph(100, 0.01)
-    >>> part = best_partition(G)
+    >>> part = modularity_run(G)
     >>> modularity(part, G)
     """
     if type(graph) != nx.Graph :
@@ -121,7 +123,7 @@ def modularity(partition, graph) :
     return res
 
 
-def best_partition(graph, partition = None) :
+def modularity_run(graph, partition = None) :
     """Compute the partition of the graph nodes which maximises the modularity
     (or try..) using the Louvain heuristices
 
@@ -161,14 +163,14 @@ def best_partition(graph, partition = None) :
     --------
     >>>  #Basic usage
     >>> G=nx.erdos_renyi_graph(100, 0.01)
-    >>> part = best_partition(G)
+    >>> part = modularity_run(G)
     
     >>> #other example to display a graph with its community :
     >>> #better with karate_graph() as defined in networkx examples
     >>> #erdos renyi don't have true community structure
     >>> G = nx.erdos_renyi_graph(30, 0.05)
     >>> #first compute the best partition
-    >>> partition = community.best_partition(G)
+    >>> partition = community.modularity_run(G)
     >>>  #drawing
     >>> size = float(len(set(partition.values())))
     >>> pos = nx.spring_layout(G)
@@ -211,7 +213,7 @@ def generate_dendogram(graph, part_init = None) :
 
     See Also
     --------
-    best_partition
+    modularity_run
 
     Notes
     -----
@@ -506,7 +508,7 @@ def __main() :
     try :
         filename = sys.argv[1]
         graphfile = __load_binary(filename)
-        partition = best_partition(graphfile)
+        partition = modularity_run(graphfile)
         print >> sys.stderr, str(modularity(partition, graphfile))
         for elem, part in partition.iteritems() :
             print str(elem) + " " + str(part)
