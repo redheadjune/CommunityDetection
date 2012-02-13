@@ -13,3 +13,4 @@ dist/*
 *~
 *.pyc
 *.pkl
+*.abs

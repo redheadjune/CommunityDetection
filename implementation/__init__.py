@@ -2,6 +2,7 @@
 
 from algorithm_tools import *
 from analysis_tools import *
+from data import *
 from data_tools import *
 from experimental_tests import *
 from known_algorithms import *
@@ -10,6 +11,7 @@ from properties import *
 
 import algorithm_tools
 import analysis_tools
+import data
 import data_tools
 import experimental_tests
 import known_algorithms

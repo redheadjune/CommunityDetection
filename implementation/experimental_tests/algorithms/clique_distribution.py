@@ -76,3 +76,54 @@ def all_cliques(graph, count):
     pickle.dump( (graph, part, found) , pf)
     pf.close()
     return found
+    
+    
+def homogeneity(cliques):
+    """Given a list of cliques - not of node names, but of which community they
+belong to, return size : % that were pure, {community : largest pure clique}
+    """
+    
+    represent = {}
+    
+    homo = {}
+    heter = {}
+    
+    for c in cliques:
+        decomp = breakdown(c)
+        size = len(c)
+        if len(decomp) == 1:
+            homo[size] = homo.get(size, 0) + 1
+            represent[c[0]] = max(represent.get(c[0], 0), size)
+        else: 
+            heter[size] = heter.get(size, 0) + 1
+            
+    percent = {}
+    for s in range(2, max(max(homo.keys()), max(heter.keys()))):
+        total = float( homo.get(s, 0) + heter.get(s, 0) )
+        if total == 0:
+            total = 1.
+        
+        percent[s] = homo.get(s, 0) / total
+        
+    return homo, heter, percent, represent
+        
+        
+def breakdown(c):
+    
+    decomp = {}
+    for cname in c:
+        decomp[cname] = decomp.get(cname, 0) + 1
+        
+    return decomp
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
