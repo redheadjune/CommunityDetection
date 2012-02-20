@@ -63,7 +63,9 @@ def physics_citations():
     G : a NetworkX graph, where each node is a paper and edges indicate
         a citation within the paper to another paper
     """
-    return load_graph(PHYSICS_CITATIONS, format_1)
+    pgraph = load_graph(PHYSICS_CITATIONS, format_1)
+    CD.clean_fragments(pgraph, 15)
+    return pgraph
     
     
 def coauthor_astro():

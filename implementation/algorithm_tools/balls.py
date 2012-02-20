@@ -6,6 +6,11 @@
 
 def get_ball(graph, core, radius):
     """ Returns the ball centered around the core of radius radius.
+    Parameters
+    ----------
+    graph : a networkx graph
+    core : a set of nodes
+    radius : the radius to march out from the core from
     """
     
     prevlayer = core
@@ -20,4 +25,3 @@ def get_ball(graph, core, radius):
         curlayer = []
         
     return prevlayer
-

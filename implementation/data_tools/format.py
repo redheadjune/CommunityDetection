@@ -10,7 +10,8 @@ def part_to_subgraphs(graph, partition):
 
 
 def part_to_sets(partition):
-    """ Transforms a partition into a list of communities
+    """ Transforms a partition into a list of communities, each community is a
+        list
     """
     communities = {}
     

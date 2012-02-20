@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from find_subsets import *
+from balls import *
 
-import find_subsets
+import balls
