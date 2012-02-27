@@ -116,7 +116,6 @@ def core_seeds(graph, ithresh, csize, method='mod'):
                 idensity = CD.get_internal_density(subgraph)
                 if idensity >= ithresh:
                     accounted.update(seed)
-                    seed = set(seed) - set(core)
                     seeds.append(list(seed))
         
     return seeds
@@ -143,6 +142,7 @@ def local_seed_communities(graph, core, r, d, method):
     Judgements
     ----------
     All judgement calls are passed in through r and d
+    Additional judgement made for running linearity on abc parameters
     """
     
     possibleseeds = []

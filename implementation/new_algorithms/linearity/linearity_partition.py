@@ -66,9 +66,9 @@ def create_dendogram(graph, __A, __B, __C):
             del(graph)
             graph = newgraph
             bar = Bar(graph, nedges, __A, __B, __C)
-            print bar
+            #print bar
             
-        print "    **level done**"
+        #print "    **level done**"
             
     return dendo
     
