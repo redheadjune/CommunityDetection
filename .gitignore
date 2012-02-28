@@ -1,6 +1,7 @@
 # Data that can be sourced elsewhere#
 #####################################
-implementation/data/*
+implementation/data/CiteSeer/*
+implementation/data/PhysicsArchive/Abstract/*
 !.gitignore
 
 # Packages #
