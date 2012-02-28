@@ -23,25 +23,28 @@ def expand(graph, subset, maxit):
     """
     order = list(subset)
     
-    extn, intn, buckets = init_trackers(graph, subset)
+    ext_n, int_n, bounds, buckets = init_trackers(graph, subset)
     
     print "Finished the setup. "
    
     count = 0
-    while check_closure(extn, intn) > .1 and count < maxit:
+    while check_closure(ext_n, int_n, bounds) > .1 and count < maxit:
         count += 1
-        if count % 100 == 0:
-            print "Progressed in ", count, "steps, to: "
-            print "             closure of:", check_closure(extn, intn)
-            print "             limits of: ", intn['min_p'], intn['min_e']
+        if count % 10 == 0:
+            print "Progressed in ", count, "steps.  Closure of:" + \
+                  str(check_closure(ext_n, int_n, bounds))+ " limits of: " + \
+                  str(bounds['min_p']) + "% and ", bounds['min_e'], "E"
             
         m = pull_best(buckets)
-        if add(extn, intn, m):
+        if add(bounds, ext_n[m]):
             order.append(m)
-            update_trackers(graph, extn, intn, buckets, m)
+            update_trackers(graph, ext_n, int_n, bounds, buckets, m)
+        else:
+            # don't consider this node again until something has changed.
+            ext_n[m]['b_id'] = 0
+            buckets[0].append(m)
         
-    return order, order, {}
-        
+    return order, ext_n, int_n, bounds
         
         
 def init_trackers(graph, subset):
@@ -51,8 +54,9 @@ def init_trackers(graph, subset):
     
     Returns
     -------
-    extn - a dictionary of nodes external to the subset, with their info
-    intn - a dict of nodes internal to the subset, with their info
+    ext_n - a dictionary of nodes external to the subset, with their info
+    int_n - a dict of nodes internal to the subset, with their info
+    bounds - a dict of the info of the community bounds in variables e and p
     buckets - a list of lists, where the further along in the top list the more
 likely to be in C, each sublist is a bucket of nodes with that approximate value
 
@@ -62,128 +66,103 @@ likely to be in C, each sublist is a bucket of nodes with that approximate value
     into the subset, and 'p' refers to $\frac{E(n, C_s)}{degree(n)}$, the
     percentage of edges of each node going into the subset.
     """
-    extn = {}
-    intn = {}
+    ext_n = {}
+    int_n = {}
     buckets = [ [] ]
     
     for n in subset:
         for m in graph.neighbors(n):
             if m not in subset:
-                extn[m] = extn.get(m, 0) + 1
+                ext_n[m] = ext_n.get(m, 0) + 1
             else:
-                intn[m] = intn.get(m, 0) + 1
+                int_n[m] = int_n.get(m, 0) + 1
     
     # set up the details of the external, but connected nodes
-    exttemp = {}
-    exttemp['all'] = []
-    exttemp['overhead'] = 3
-    exttemp['void'] = ['all', 'overhead', 'void']
-    for m, dm in extn.iteritems():
-        exttemp[m] = {'e':dm, 'p':dm/float(graph.degree(m)), 'b_id':0}
-        exttemp['all'].append((exttemp[m]['p'], exttemp[m]['e']))
+    for m, dm in ext_n.iteritems():
+        ext_n[m] = {'e':dm, 'p':dm/float(graph.degree(m)), 'b_id':0}
         buckets[0].append(m)
-        
-    extn = exttemp
-        
+    
     # set up the details of the internal nodes
-    inttemp = {}
-    inttemp['all_e'] = []
-    inttemp['all_p'] = []
-    inttemp['void'] = ['all_e', 'all_p', 'void', 'overhead', 'min_e', 'min_p',
-                       'slope']
-    inttemp['overhead'] = 4
-    for n, dn in intn.iteritems():
-        inttemp[n] = {'e':dn,
-                      'p':dn/float(graph.degree(n)),
-                      'slope':float(graph.degree(n))}
-        inttemp['all_e'].append(inttemp[n]['e'])
-        inttemp['all_p'].append(inttemp[n]['p'])
-        
-    intn = inttemp
-    update_bounds(intn)
-    intn['overhead'] += 3
+    for n, dn in int_n.iteritems():
+        int_n[n] = {'e':dn,
+                    'p':dn/float(graph.degree(n)),
+                    'slope':float(graph.degree(n))}
     
-    update_buckets(extn, intn, buckets, copy.copy(buckets[0]))
+    bounds = {'total_ext_degree' : 0.0 }
+    update_bounds(graph, int_n, ext_n, bounds, ext_n.keys(), [])
+    
+    update_buckets(ext_n, bounds, buckets, copy.copy(buckets[0]))
  
-    return extn, intn, buckets
+    return ext_n, int_n, bounds, buckets
     
     
-def update_bounds(intn):
+def update_bounds(graph, int_n, ext_n, bounds, newly_attached, newly_removed):
     """ Finds the bounds of what 'e' or 'p' have to be at least to be in C
+    
+    Parameters
+    ----------
+    int_n : dictionary of internal nodes
+    bounds : bounds dictionary with all info
+    newly_attached : nodes that have now joined the fray
+    newly_removed : nodes that have been included into the community
     
     Method
     ------
-    Presumes that all data in intn is meant to stay, uses a line between the
+    Presumes that all data in int_n is meant to stay, uses a line between the
     origin and the (average p, average e), classifies points as above or below
     the line.  If above, the points contribute to what the minimum e must be,
     and if below, points must contribute to what the minimum p must be.
     """
+
+    bounds['total_ext_degree'] -= sum([graph.degree(n) for n in newly_removed])
+    bounds['total_ext_degree'] += sum([graph.degree(n) for n in newly_attached])
     
-    slope = sum(intn['all_e']) / float(sum(intn['all_p']))
+    bounds['ext_slope'] = bounds['total_ext_degree'] / float(len(ext_n))
     
-    mine = len(intn['all_e'])
-    minp = 1.
-    valid_e = []
-    valid_p = []
-    
-    for n, infon in intn.iteritems():
-        if n not in intn['void']:
-            if infon['e'] / infon['p'] > slope:
-                valid_e.append(infon['e'])
-                mine = min(mine, infon['e'])
-            else:
-                valid_p.append(infon['p'])
-                minp = min(minp, infon['p'])
-                
-    valid_e.sort()
-    valid_p.sort()       
-            
-    intn['min_e'] = max(intn.get('min_e', 0.), valid_e[len(valid_e)/50])
-    intn['min_p'] = max(intn.get('min_p', 0.), valid_p[len(valid_p)/50])
-    intn['slope'] = slope
+
+    bounds['min_p'] = 1.
+    bounds['min_e'] = float(len(int_n))
+    for n, dn in int_n.iteritems():
+        if dn['slope'] > bounds['ext_slope']:
+            bounds['min_e'] = min(bounds['min_e'], dn['e'])
+        else:
+            bounds['min_p'] = min(bounds['min_p'], dn['p'])    
 
 
-def update_trackers(graph, extn, intn, buckets, n):
+def update_trackers(graph, ext_n, int_n, bounds, buckets, n):
     """ Adds n into the community and updates all the data structures in place
     Parameters
     ----------
     
     Returns
     -------
-    nothing : but changes extn, intn, and buckets to reflect n now in C
+    nothing : but changes ext_n, int_n, and buckets to reflect n now in C
     """
-    intn[n] = extn.pop(n)
-    intn[n]['r'] = []
-    intn['all_e'].append(intn[n]['e'])
-    intn['all_p'].append(intn[n]['p'])
-    changed = []
+    int_n[n] = ext_n.pop(n)
+    int_n[n]['slope'] = graph.degree(n)
     
+    changed = []
+    newly_attached = []
     for m in graph.neighbors(n):
-        if m in intn:
-            intn['all_e'].remove(intn[m]['e'])
-            intn['all_p'].remove(intn[m]['p'])
-            intn[m]['e'] += 1
-            intn[m]['p'] = intn[m]['e'] / float(graph.degree(m))
-            intn['all_e'].append(intn[m]['e'])
-            intn['all_p'].append(intn[m]['p'])
+        if m in int_n:
+            int_n[m]['e'] += 1
+            int_n[m]['p'] = int_n[m]['e'] / float(graph.degree(m))
             
         else:
-            if m in extn:
-                extn['all'].remove( (extn[m]['p'], extn[m]['e']) )
-            else:
-                extn[m] = {'e':0, 'b_id':0}
+            if m not in ext_n:
+                ext_n[m] = {'e':0, 'b_id':0}
                 buckets[0].append(m)
+                newly_attached.append(m)
             
-            extn[m]['e'] += 1
-            extn[m]['p'] = extn[m]['e'] / float(graph.degree(m))
-            extn['all'].append( (extn[m]['p'], extn[m]['e']) )
+            ext_n[m]['e'] += 1
+            ext_n[m]['p'] = ext_n[m]['e'] / float(graph.degree(m))
             changed.append(m)
             
-    update_bounds(intn)
-    update_buckets(extn, intn, buckets, changed)
+    update_bounds(graph, int_n, ext_n, bounds, newly_attached, [n])
+    update_buckets(ext_n, bounds, buckets, changed)
     
     
-def update_buckets(extn, intn, buckets, changed):
+def update_buckets(ext_n, bounds, buckets, changed):
     """ Given that the status of nodes in changed is updated, shuffles the
     buckets.  All operations are done in place.
 
@@ -196,19 +175,20 @@ def update_buckets(extn, intn, buckets, changed):
     """
     
     for n in changed:
-        buckets[extn[n]['b_id']].remove(n)
-        newb = bucket_id(extn[n], extn, intn)
-        extn[n]['b_id'] = newb
-        if newb > len(buckets):
+        buckets[ext_n[n]['b_id']].remove(n)
+        newb = bucket_id(ext_n[n], bounds)
+        ext_n[n]['b_id'] = newb
+        if newb >= len(buckets):
             buckets.extend([[] for i in range(len(buckets), newb + 2)])
         buckets[newb].append(n)
             
 
-def bucket_id(spec, extn, intn):
+def bucket_id(spec, bounds):
     """ Is an ordered function that finds which bucket spec is in.
     """
         
-    return int (spec['e']/intn['min_e'] + 100 * spec['p']/intn['min_p'])
+    return int ( spec['e']/bounds['min_e'] + \
+                 bounds['ext_slope'] * spec['p']/bounds['min_p'] )
     
     
 def pull_best(buckets):
@@ -226,7 +206,7 @@ def pull_best(buckets):
     return False
     
     
-def check_closure(extn, intn):
+def check_closure(ext_n, int_n, bounds):
     """ Returns the fraction of nodes not already in C that meet the
 requirements
     
@@ -236,18 +216,19 @@ requirements
 is closed.
     """
     
-    outside = filter(lambda (a,b): a>intn['min_p'] or b>intn['min_e'],
-                     extn['all'])
+    outside = filter(lambda (n, info_n): info_n['e'] > bounds['min_e'] or \
+                                         info_n['p'] > bounds['min_p'],
+                     ext_n.iteritems())
                      
-    return len(outside) / float(len(intn) - intn['overhead'])
+    return len(outside) / float( len(int_n) )
     
     
-def add(extn, intn, m):
+def add(bounds, spec):
     """ Checks whether or not should really add m
     """
-    if extn[m]['e'] < 6 and extn[m]['e'] < .2:
-        print "reallllly, ", m, extn[m]
-    if extn[m]['e'] > intn['min_e'] or extn[m]['e'] > intn['min_p']:
+    if spec['e'] < 6 and spec['p'] < .2:
+        print "reallllly, ", spec
+    if spec['e'] > bounds['min_e'] or spec['p'] > bounds['min_p']:
         return True
         
     return False
