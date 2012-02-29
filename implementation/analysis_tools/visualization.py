@@ -36,6 +36,11 @@ def vis_e_p(graph,
     
     Parameters
     ---------
+    graph : a networkx graph
+    ext_n : the dictionary of information about external nodes
+    int_n : the dictionary of information about internal nodes
+    bounds : the limits of the e and p values
+    desired : what we wish would have been recovered
     
     Method
     ------
