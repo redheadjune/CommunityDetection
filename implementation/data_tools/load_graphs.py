@@ -170,7 +170,10 @@ def load_graph(path, form):
     Parameters
     ----------
     """
-    gfile = open(path, 'rb')
+    try:
+        gfile = open(DATA_PATH_1 + path, 'rb')
+    except:
+        gfile = open(DATA_PATH_2 + path, 'rb')
     
     nodes = set()
     edges = []
