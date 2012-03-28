@@ -7,8 +7,33 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 
-def expand(graph, subset, maxit):
-    """This is just a rough sketch.
+def expand_all(graph, seeds):
+    """Expands all seeds within the graph
+    """
+    found_c = []
+    found_cand = []
+    found_closure = []
+    found_stat = []
+    found_sd = []
+    found_order = []
+    
+    for s in seeds:
+        c, cand, order, stat_hist, sd_hist, closure_hist = expand(graph, s, 200, forced=True)
+        found_c.append(c)
+        found_cand.append(cand)
+        found_order.append(order)
+        found_stat.append(stat_hist)
+        found_sd.append(sd_hist)
+        found_closure.append(closure_hist)
+            
+        if len(found_c) % 10 == 0:
+            print "completed ", len(found_c), " expansions out of ", len(seeds)
+        
+    return found_c, found_cand, found_order, found_stat, found_sd, found_closure
+        
+
+def expand(graph, subset, maxit, forced=False):
+    """Expands the given subset with the more likely determined by 
     Parameters
     ----------
     graph : the networkx graph
@@ -23,54 +48,72 @@ def expand(graph, subset, maxit):
     -------
     order : the order in which the nodes were engulfed
     """
-    # set up cumulative data structures
+    # set up community and candidate data structures
     cs = community.Community()
     external_nodes = cs.init(graph, subset)
     cand = candidates.Candidates(graph, external_nodes, cs)
+    cs.init_bounds(cand)
+    cand.rework_fringe()
     
     # set up accounting data structures for experimentation
+    stat_hist = []
+    sd_hist = []
+    closure_hist = []
     order = list(subset)
-    failed = []    
-    closure_history = [closure(cs, cand)] 
-    slope_history = []
-    e_p_history = [(cs.bounds['min_e'], cs.bounds['min_p'])]
-    count = 0
     
-    while good_history(closure_history, e_p_history) and count < maxit:
-        if count % 1 == 0:
-            print "Stepped ", count, "times." +\
-                  "Closure of: ", str(closure(cs, cand))+ \
-                  cs.to_string()
-            
+    count = 0
+    while (forced or closure(cs, cand) > 0) and count < maxit:
         m = cand.get_best()
-        if cs.is_candidate(cand.close[m]):
+        if m == None:
+            if not forced:
+                break
+            else:
+                m = cand.get_forced()
+                if m == None:
+                    print "Ran out of nodes."
+                    break
+           
+        if forced or cs.is_candidate(cand.close[m]):
             order.append(m)
             changed = cs.add_node(graph, m, cand.fringe)
             cand.add_connectivity(changed)
             cand.remove_node(m)
         else:
-            print "Partitioning of Fringe and Close grew old."
-            failed.append(m)
-            cand.remove_node(m)
+            print "BUG (?) in EXPAND"
             
-        closure_history.append(closure(cs, cand))
-        slope_history.append((cs.bounds['slope'], cs.bounds['offset']))
-        e_p_history.append((cs.bounds['min_e'], cs.bounds['min_p']))
+        stat_hist.append((copy.copy(cs.nodes[m]),
+                          cand.stat_import(cs.nodes[m]),
+                          cand.stats_string()))
+        sd_hist.append(cand.stat_import(cs.nodes[m])[cs.nodes[m]['reason']])
+        closure_hist.append(closure(cs, cand))
+            
         count += 1
+        if count % 100 == 0:
+            print count, closure(cs, cand)
+                   
+    cs, cand = cut_last_closure(graph, order, cs, cand, closure_hist)
+    imp = cand.stat_import({'e':cs.bounds['min_e'], 'p':cs.bounds['min_p']})
+    #print "Finished in ", count, " steps.  With Closure: ", closure(cs, cand), " With ", len(cs.nodes), " nodes."
+    #print "         The standard deviation away for e is: ", imp['e'], " and p: ", imp['p']
         
-    """ Old cutting code
-    min_c = min(closure_history)
-    cut_off = filter(lambda i: closure_history[i] == min_c,
-                     range(len(closure_history)))
-    
-    order = order[:cut_off[-1]+1]
-    closure_history = closure_history[:cut_off[-1]+1] 
-    """  
-            
-    print "Finished in ", count, " steps.  With Closure: ", closure(cs, cand)
-        
-    return cs, cand, order, failed, closure_history, slope_history
+    return cs, cand, order, stat_hist, sd_hist, closure_hist
 
+
+def cut_last_closure(graph, order, cs, cand, closure_history):
+    """collapses community down to the last time it was closed
+    """
+    if closure_history[-1] != 0:
+        closure_history.reverse()
+        cut = closure_history.index(min(closure_history))
+        closure_history.reverse()
+        cs = community.Community()
+        external_nodes = cs.init(graph, order[:-cut])
+        cand = candidates.Candidates(graph, external_nodes, cs)
+        cs.init_bounds(cand)
+        cand.rework_fringe()
+        return cs, cand
+    else:
+        return cs, cand
 
 def is_community(bounds, closure_history):
     """ Tests whether or not we have a community

@@ -81,7 +81,7 @@ def coauthor_astro():
     CD.clean_coauthor_network(agraph, 3)
     prefix = gen_prefix("Astrophysics", 15507, 193396)
     CD.write_edges(agraph,
-                   DATA_PATH+"CollaborationNetworks/cleaned-astro.txt",
+                   DATA_PATH_2+"CollaborationNetworks/cleaned-astro.txt",
                    prefix)
     return agraph
     
@@ -97,7 +97,7 @@ def coauthor_cond():
     CD.clean_coauthor_network(cgraph, 3)
     prefix = gen_prefix("Condensed Matter", 16966, 84747)
     CD.write_edges(cgraph,
-                   DATA_PATH+"CollaborationNetworks/cleaned-cond.txt",
+                   DATA_PATH_2+"CollaborationNetworks/cleaned-cond.txt",
                    prefix)
     return cgraph
     
@@ -113,7 +113,7 @@ def coauthor_energy():
     CD.clean_coauthor_network(egraph, 3) # keep nodes of degree 3 or higher
     prefix = gen_prefix("High Energy Physics", 8480, 113600)
     CD.write_edges(egraph,
-                   DATA_PATH+"CollaborationNetworks/cleaned-energy.txt",
+                   DATA_PATH_2+"CollaborationNetworks/cleaned-energy.txt",
                    prefix)
     return egraph
 
@@ -136,7 +136,7 @@ def coauthor_energy_theory():
     CD.clean_coauthor_network(egraph, 3) # keep nodes of degree 3 or higher
     prefix = gen_prefix("High Energy Theory Physics", 5446, 20337)
     CD.write_edges(egraph,
-                   DATA_PATH+"CollaborationNetworks/cleaned-energy-theory.txt",
+                   DATA_PATH_2+"CollaborationNetworks/cleaned-energy-theory.txt",
                    prefix)
     return egraph
 
@@ -160,9 +160,22 @@ def coauthor_relativity():
     CD.clean_coauthor_network(rgraph, 3) # keep nodes of degree 3 or higher
     prefix = gen_prefix("General Relativity", 2694, 11400)
     CD.write_edges(rgraph,
-                   DATA_PATH+"CollaborationNetworks/cleaned-relativity.txt",
+                   DATA_PATH_2+"CollaborationNetworks/cleaned-relativity.txt",
                    prefix)
     return rgraph
+
+
+def amazon():
+    """ Amazon co-purchasing graph
+    
+    Note
+    ----
+    The Amazon purchasing network is an enormous network with 410236 nodes and
+    2439437 edges.  It is a single connected component.  The graph needs no
+    cleaning.
+    """
+    agraph = load_graph(AMAZON, format_2)
+    return agraph
 
 
 def load_graph(path, form):

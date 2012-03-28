@@ -5,7 +5,7 @@ DATA_PATH_1 = "/home/redajax/Research/Hopcroft/" + \
 
 DATA_PATH_2 = "/Users/june/Desktop/Communities/CommunityDetection/" + \
               "implementation/data/"
-
+AMAZON = "Amazon/Amazon0505.txt"
 ASTRO_COAUTHOR = "CollaborationNetworks/CA-AstroPh.txt"
 COND_COAUTHOR = "CollaborationNetworks/CA-CondMat.txt"
 ENERGY_COAUTHOR = "CollaborationNetworks/ca-HepPh.txt"

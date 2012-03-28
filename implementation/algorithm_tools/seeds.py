@@ -6,6 +6,53 @@ import networkx as nx
 """ This module is for providing different ways of getting seed communities.
 """
 
+def distant_seeds(graph, method='mod'):
+    """Finds seeds that are far apart in the graph
+    Parameters
+    ----------
+    graph : a networkx graph
+    method : optional input for which local community method to find
+    
+    Method
+    ------
+    For a decreasing min clique size, finds a clique of that size, finds the
+    best seed involving that clique, appends it, and removes the ball of radius 1
+    from the graph.  Then repeats until there are no more cliques of that size
+    and terminates when the graph is empty.
+    """
+
+    graph = graph.copy()
+    seeds = []
+    clique_size = 20
+    
+    while graph.number_of_nodes() > 0 and clique_size > 10:
+        more = True
+        gen_cliques = nx.find_cliques(graph)
+        clique = gen_cliques.next()
+        while more:
+            if len(clique)>= clique_size:
+                print "     found seed", len(seeds), graph.number_of_nodes()
+                more = False
+                possibleseeds = local_seed_communities(graph,
+                                                       clique,
+                                                       1,
+                                                       0.5 * len(clique),
+                                                       method)
+                possibleseeds.sort(reverse=True)
+                seeds.append(possibleseeds[0])
+                graph.remove_nodes_from(CD.get_ball(graph, possibleseeds[0], 1))
+            
+            try:
+                clique = gen_cliques.next()
+            except:
+                break
+            
+        if more:
+            print "ran through that size of clique ", clique_size
+            clique_size -= 1
+    
+    return seeds
+
 def ind_seeds(graph, ithresh, dthresh, method='mod'):
     """ Finds all seed communities within the graph, starting from an
     individual node,
@@ -170,6 +217,8 @@ def local_seed_communities(graph, core, r, d, method):
         possibleseeds = CD.part_to_sets(split)
         for c in possibleseeds:
             c.extend(core)
+            
+    possibleseeds.append(core)
             
     return possibleseeds
                 
