@@ -18,7 +18,7 @@ def expand_all(graph, seeds):
     found_order = []
     
     for s in seeds:
-        c, cand, order, stat_hist, sd_hist, closure_hist = expand(graph, s, 200, forced=True)
+        c, cand, order, stat_hist, sd_hist, closure_hist = expand(graph, s, 600, forced=True)
         found_c.append(c)
         found_cand.append(cand)
         found_order.append(order)
@@ -56,10 +56,13 @@ def expand(graph, subset, maxit, forced=False):
     cand.rework_fringe()
     
     # set up accounting data structures for experimentation
-    stat_hist = []
-    sd_hist = []
-    closure_hist = []
-    order = list(subset)
+    order = list(subset)    
+    m = order[-1]
+    stat_hist = [(copy.copy(cs.nodes[m]),
+                          cand.stat_import(cs.nodes[m]),
+                          cand.stats_string())]
+    sd_hist = [cand.stat_import(cs.nodes[m])[cs.nodes[m]['reason']]]
+    closure_hist = [closure(cs, cand)]
     
     count = 0
     while (forced or closure(cs, cand) > 0) and count < maxit:
@@ -88,13 +91,14 @@ def expand(graph, subset, maxit, forced=False):
         closure_hist.append(closure(cs, cand))
             
         count += 1
-        if count % 100 == 0:
+        if count % 500 == 0:
             print count, closure(cs, cand)
                    
     cs, cand = cut_last_closure(graph, order, cs, cand, closure_hist)
     imp = cand.stat_import({'e':cs.bounds['min_e'], 'p':cs.bounds['min_p']})
-    #print "Finished in ", count, " steps.  With Closure: ", closure(cs, cand), " With ", len(cs.nodes), " nodes."
-    #print "         The standard deviation away for e is: ", imp['e'], " and p: ", imp['p']
+    print "Finished in ", count, " steps."
+    print "         With Closure: ", closure(cs, cand), " With ", len(cs.nodes), " nodes."
+    print "         The standard deviation away for e is: ", imp['e'], " and p: ", imp['p']
         
     return cs, cand, order, stat_hist, sd_hist, closure_hist
 
@@ -102,7 +106,7 @@ def expand(graph, subset, maxit, forced=False):
 def cut_last_closure(graph, order, cs, cand, closure_history):
     """collapses community down to the last time it was closed
     """
-    if closure_history[-1] != 0:
+    if closure_history[-1] != min(closure_history):
         closure_history.reverse()
         cut = closure_history.index(min(closure_history))
         closure_history.reverse()

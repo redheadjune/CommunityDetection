@@ -3,7 +3,113 @@
 from constants import *
 
 import CommunityDetection as CD
+import random
 import networkx as nx
+
+def merge_graph(graphs, p):
+    """Given a set of graphs, merges them, with the underlying connectivity p
+    Parameters
+    ----------
+    graph : a list of networkx graphs
+    p : the probability with which 2 nodes from different graphs are connected
+    """
+    big_graph = nx.Graph()
+    for g in graphs:
+        big_graph.add_nodes_from(g.nodes())
+        
+    for g in graphs:
+        big_graph.add_edges_from(g.edges())
+        
+    for g in graphs:
+        for n in g.nodes():
+            for m in big_graph.nodes():
+                multi = g.degree(n) / 15.
+                if m not in g.nodes() and random.random() < p / 2. * multi:
+                    big_graph.add_edge(n, m)
+                    
+    return big_graph
+
+
+def random_tier_graph(offset=0):
+    """Create a set of 3 nested graphs, where the inner core is most dense
+    Parameters
+    ----------
+    offset : the base node name
+    
+    Returns
+    -------
+    graph : a networkx graph with nodes named offset to offset + 150
+    """
+    rings = [set(range(offset, offset + 20)),
+             set(range(offset + 20, offset + 60)),
+             set(range(offset + 60, offset + 150))]
+    p = [0.8, 0.2, 0.05]
+    
+    graph = nx.Graph()
+    graph.add_nodes_from(range(offset, offset + 150))
+    
+    def get_d(n):
+        for i in range(len(rings)):
+            if n in rings[i]:
+                return i
+    
+    for n in range(offset, offset + 150):
+        n_d = get_d(n)
+        for m in range(n+1, offset + 150):
+            m_d = get_d(m)
+            if random.random() < .15*p[n_d] + .85*p[m_d]:
+                graph.add_edge(n, m, {'weight': 1.})
+    
+    return graph
+
+
+def random_dual_core_graph(offset=0, r_rings=False):
+    """Creates a random graph with 2 cores and of size 400 and 3 tiers
+    """
+    row_size = 20
+    def get_rectangle(corner, height, width):
+        core = set()
+        for i in range(height):
+            core.update(range(corner + row_size * i,
+                              corner + row_size * i + width))
+            
+        return core    
+    
+    cores = [get_rectangle(offset + row_size * 7 + 7, 5, 2),
+             get_rectangle(offset + row_size * 7 + 10, 5, 2)]
+    rings = [set(cores[0]).union(set(cores[1]))]
+    rings.append(get_rectangle(offset + row_size * 4 + 4, 10, 10) - rings[0])
+    rings.append(get_rectangle(offset, 20, 20) - rings[0] - rings[1])
+    
+    p = [0.8, 0.05, 0.005]
+    
+    graph = nx.Graph()
+    graph.add_nodes_from(range(offset, offset + 400))
+    
+    def get_d(n):
+        for i in range(len(rings)):
+            if n in rings[i]:
+                return i
+            
+    def populate_ring(nodes):
+        for n in nodes:
+            n_d = get_d(n)
+            for m in nodes:
+                if m > n:
+                    m_d = get_d(m)
+                    if random.random() < .15*max(p[n_d], p[m_d]) + .85*min(p[n_d], p[m_d]):
+                        graph.add_edge(n, m, {'weight': 1.})
+                        
+    for i in range(len(cores)):
+        populate_ring(cores[i])
+        for j in range(1, len(rings)):
+            populate_ring(cores[i].union(rings[j]))
+            
+    if r_rings:
+        return graph, cores, rings
+            
+    return graph
+
     
 def football_graph():
     """Creates the graph for which college football teams played each other in a

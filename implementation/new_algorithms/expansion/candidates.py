@@ -123,10 +123,14 @@ class Candidates:
     def stats_string(self):
         """Forms a string for easy printing
         """
-        return "avg e: " + str(self.stats['avg_e']) + \
-               " standard deviance e: " + str(self.stats['var_e']**.5) + \
-               " avg p: " + str(self.stats['avg_p']) + \
-               " standard deviance p: " + str(self.stats['var_p']**.5)
+        if self.stats['var_e'] >=0 and self.stats['var_p'] >= 0:
+            return "avg e: " + str(self.stats['avg_e']) + \
+                   " standard deviance e: " + str(self.stats['var_e']**.5) + \
+                   " avg p: " + str(self.stats['avg_p']) + \
+                   " standard deviance p: " + str(self.stats['var_p']**.5)
+        else:
+            return "Hope that was the end, because deviance is tapped " + \
+                   str(self.stats['var_p']) + " " + str(self.stats['var_e'])
         """
         return "Power law of (e_min, e_alpha)" + str((self.stats['e_min'], self.stats['e_alpha'])) + \
                " (p_min, p_alpha) " + str((self.stats['p_min'], self.stats['p_alpha']))
@@ -151,6 +155,9 @@ class Candidates:
         """
         best, reclassify = self.get_outlier(self.close)
         self.reclassify(reclassify)
+        if best in reclassify:
+            best, reclassify = self.get_outlier(self.close)
+            
         return best
     
     

@@ -6,6 +6,51 @@ import matplotlib.pyplot as plt
 
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
+def vis_g_np_graph(graph, show_nodes, fig=None, color=None):
+    """ Presumes the setup of 4 subgraphs, joined with 
+    """
+    row_size = 20
+    
+    def get_pos(n):
+        offset = (n / row_size**2) * row_size**2
+        n = n - offset
+        y = n / row_size
+        x = n - row_size * y
+        return (x, y, offset / row_size**2)
+    
+    def get_color(d):
+        if d > 50:
+            return 'g'
+        if d > 9:
+            return 'y'
+        return 'r'
+    
+    pos = {}
+    for n in graph:
+        (x, y, offset) = get_pos(n)
+        if offset in [2, 3]:
+            y += 20
+        
+        if offset in [1, 3]:
+            x += 20
+            
+        pos[n] = (x, y)
+        
+    if color == None:
+        color = [get_color(graph.degree(n)) for n in graph.nodes()]
+        
+    if fig == None:
+        fig = plt.figure(); ax = fig.add_subplot(111);
+        
+    nx.draw(graph,
+            pos,
+            node_color=color,
+            node_size=20,
+            with_labels=False,
+            edgelist=[],
+            nodelist=show_nodes)
+        
+
 def vis_ball(graph, core, radius):
     """ Plots the subgraph corresponding to the ball around core of the given
         radius.
@@ -76,8 +121,8 @@ def vis_e_p(graph,
     p1, = ax.plot(int_nodes_p, int_nodes_e, 'r.', markersize=10)
     p2, = ax.plot(ext_nodes_p, ext_nodes_e, 'k.', markersize=10)
     if desired != []:
-        p3, = ax.plot(have_nodes_p, have_nodes_e, 'm.')
-        p4, = ax.plot(want_nodes_p, want_nodes_e, 'g.')
+        p3, = ax.plot(have_nodes_p, have_nodes_e, 'm.', markersize=10)
+        p4, = ax.plot(want_nodes_p, want_nodes_e, 'g.', markersize=10)
         
         ax.legend([p1, p2, p3, p4],
                   ["$C_s - C$", "$V - C$", "$C_s \cap C$", "$C - C_s$"],

@@ -25,7 +25,7 @@ def distant_seeds(graph, method='mod'):
     seeds = []
     clique_size = 20
     
-    while graph.number_of_nodes() > 0 and clique_size > 10:
+    while graph.number_of_nodes() > 0 and clique_size >= 4:
         more = True
         gen_cliques = nx.find_cliques(graph)
         clique = gen_cliques.next()
