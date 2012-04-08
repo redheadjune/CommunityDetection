@@ -90,36 +90,6 @@ def linear_single(C, G, param):
     
     return I, E, (a * I - b * E)
     
-    
-def conductance(C, G):
-    """Compute the conductance metric value of community C, a subset of graph G.
-        
-        Parameters
-        ----------
-        C: a subset of nodes of G
-        G: a networkx undirected, unweighted graph, with no self-loops
-        
-        Returns
-        -------
-        conductance: the ratio of internal and all edges
-
-        Raises
-        ------
-        IOException: if any inputs are incorrectly formed
-    """
-    
-    int_edge_count = 0
-    ext_edge_count = 0
-    
-    for n in C:
-        for (u,v) in G.edges(n):
-            if u in C and v in C:
-                int_edge_count += 1
-            else:
-                ext_edge_count += 1
-                
-    return int_edge_count / float(int_edge_count + 2 * ext_edge_count)
-            
             
 def linear_set(S, G, param):
     """Compute the linear metric value of a set of communities.
@@ -237,3 +207,131 @@ in networks. Physical Review E 69, 26113(2004).
     for com in set(partition.values()) :
         res += (inc.get(com, 0.) / links) - (deg.get(com, 0.) / (2.*links))**2
     return res
+
+
+def m_conductance(graph, seed):
+    """Calculates the conductance of seed within graph, couple with minimize
+    """  
+    internal_edges, external_edges = in_and_out(graph, seed)
+    return external_edges / float(external_edges + 2 * internal_edges)
+
+
+def m_expansion(graph, seed):
+    """finds the expansion of the seed, couple with minimize
+    """
+    internal_edges, external_edges = in_and_out(graph, seed)
+    return external_edges / float(len(seed))
+
+
+def m_cut_ratio(graph, seed):
+    """finds the cut ratio, couple with minimize
+    """
+    I, E = I_E(graph, seed)
+    return E
+
+
+def m_edges_cut(graph, seed):
+    """finds the edge cuts, couple with  minimize
+    """
+    internal_edges, external_edges = in_and_out(graph, seed)
+    return external_edges
+
+def m_prev_internal(graph, seed):
+    """finds the internal density metric, couple with minimize
+    """
+    I, E = I_E(graph, seed)
+    return 1 - I
+
+
+def m_volume(graph, seed):
+    """finds the internal density metric, couple with maximize
+    """
+    internal_edges, external_edges = in_and_out(graph, seed)
+    return 2 * internal_edges + external_edges
+
+
+def compare_maximize(m, new_m):
+    """ Gives a comparison function for maximization
+    """
+    return new_m - m
+
+
+def compare_minimize(m, new_m):
+    """ Gives a comparison function for minimization
+    """
+    return m - new_m
+
+
+def I_E(graph, seed):
+    """ compute in the internal and external density of community c
+    """
+    in_degree, out_degree = in_and_out(graph, seed)
+    return map_degree(in_degree, out_degree, graph, seed) 
+
+
+def I_E_S(graph, communities):
+    """ computes the internal, external density, and number of communities
+    according the the definition for a set of communities
+    """
+    external_edges = set(graph.edges())
+    found_internal = 0.
+    for c in communities:
+        internal_edges = get_internal_edges(graph, c)
+        found_internal += len(internal_edges)
+        external_edges = external_edges - set(internal_edges)
+            
+    ideal_int_edges = float(sum([len(c) * (len(c) - 1) for c in communities]))
+    I = 1.
+    if ideal_int_edges > 0:
+        I = found_internal / ideal_int_edges
+        
+    E = len(external_edges) / float(graph.number_of_edges())
+    S = float(len(communities))
+    
+    return I, E, S
+
+
+def map_degree(in_degree, out_degree, graph, seed):
+    """Returns the internal and external density of one
+    community in the graph, based on the in and out degree.
+    """
+    if len(seed) == 1:
+        I = 1.
+    else:
+        I = in_degree / float(len(seed) * (len(seed) - 1))
+    
+    if len(graph) == len(seed):
+        E = 0.
+    else:
+        E = out_degree / float(len(seed) * (len(graph) - len(seed)))
+    
+    return I, E
+    
+        
+def in_and_out(graph, seed):
+    """Finds the number of internal and external edges of seed within graph.
+    
+    """
+    out_degree = 0.
+    in_degree = 0.
+    for n in seed:
+        edges = graph.edges(n)
+        for (u,v) in edges:
+            if v not in seed:
+                out_degree += 1.
+            else:
+                in_degree += 1.
+                
+    return in_degree, out_degree
+
+
+def get_internal_edges(graph, c):
+    """ Finds the edges within c, according the graph
+    """
+    internal_edges = []
+    for n in c:
+        for m in graph.neighbors(n):
+            if m in c:
+                internal_edges.append((n,m))
+                
+    return internal_edges

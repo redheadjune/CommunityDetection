@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import Tools as T
-import Metrics as M
+import CommunityDetection as CD
 import matplotlib.pyplot as plt
+
 
 def plot_dendo(dendo, graph):
     
@@ -11,7 +11,7 @@ def plot_dendo(dendo, graph):
     fig = plt.figure()
     ax = fig.add_subplot(111)
     
-    groups = T.dendo_to_hierarchy(dendo)
+    groups = CD.dendo_to_hierarchy(dendo)
     
     for i in range(len(groups)-1):
         plot_set(ax, graph, groups[i].values(), colors[i])
@@ -26,7 +26,7 @@ def plot_set(ax, graph, group, color):
     I_values = []
     E_values = []
     for c in group:
-        I, E, rubish = M.measure_community(c,
+        I, E, rubish = CD.measure_community(c,
                                            graph, 
                                            'linearity',
                                            param=(1., 1.))

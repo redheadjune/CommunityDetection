@@ -2,11 +2,13 @@ import CommunityDetection as CD
 import networkx as nx
 import matplotlib.pyplot as plt
 import random
+
 """This module is to analyze previous metrics
 """
 
 def draw_metric_change_vectors(metric, degree, fig=None, c=None):
-    """ Draws the vector
+    """ Draws the vector of possible changes in the metric by adding nodes
+    
     """
     
     # create a subset of the football graph to work with
@@ -14,8 +16,8 @@ def draw_metric_change_vectors(metric, degree, fig=None, c=None):
     nodes = graph.nodes()
     if c == None:
         c = [nodes[random.randint(0, len(nodes) - 1)] for i in range(20)]
-        print "working with", CD.m_internal_density(graph, c), CD.m_external_density(graph, c)
-        print c
+    else:
+        c = c[:]
         
     ext_nodes = list(set(nodes) - set(c))
     
@@ -48,6 +50,4 @@ def draw_metric_change_vectors(metric, degree, fig=None, c=None):
             node_color='b',
             node_size=sizes,
             with_labels=False)
-    
-    return c, value, pos
         
