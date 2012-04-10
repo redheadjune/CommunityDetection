@@ -247,7 +247,6 @@ class Bottle :
     """
         
     def __init__(self, name, graph, members):
-        
         self.name = name
         self.contains = list(copy.copy(members))
         self.size = sum([graph.node[n]['size'] for n in self.contains])

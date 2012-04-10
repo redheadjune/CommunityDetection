@@ -57,4 +57,4 @@ def clean_coauthor_network(graph, threshold):
     print "Cleaned graph by adding ", len(bridges), " bridges."
     
     graph.remove_nodes_from(toremove)
-    graph.add_edges_from(bridges)
+    graph.add_edges_from(bridges, weight=1.)

@@ -9,6 +9,40 @@ import matplotlib.patches as patch
 """
 This is for generating figures for the paper
 """
+def gen_visually_clear():
+    """ Generates a subset of friendships for a visually clear graph
+    """
+    people = ["June", "Scott", "Kyle", "Amy", "Rebecca", "Tim", "Maarika",
+              "Diarmuid", "Matt", "Rocio"]
+    
+    def clique(persons):
+        edges = []
+        for p1 in persons:
+            for p2 in persons:
+                edges.append((p1, p2))  
+        return edges  
+
+    graph = nx.Graph()
+    graph.add_nodes_from(people)
+    graph.add_edges_from([(people[0], p) for p in people])
+    graph.add_edges_from([(people[1], p) for p in people])
+    graph.add_edges_from(clique(people[:6]))
+    graph.add_edges_from(clique(people[6:]))
+    
+    pos = {"June":(0, 1), "Scott":(0, -1),
+           "Kyle":(10, 3), "Amy":(20, 1), "Rebecca":(20, -1), "Tim":(10, -3),
+           "Maarika":(-10, 3), "Diarmuid":(-20, 1), "Matt":(-20, -1),
+           "Rocio":(-10, -3)}
+    
+    color = {"June":'#F5FFFA', "Scott":'#F5FFFA',
+             "Kyle":'#FFE4E1', "Amy":'#FFE4E1', "Rebecca":'#FFE4E1', "Tim":'#FFE4E1',
+             "Maarika":'#FFFACD', "Diarmuid":'#FFFACD', "Matt":'#FFFACD', "Rocio":'#FFFACD'}
+    color = [color[p] for p in graph.nodes()]
+                
+    fig = plt.figure()
+    ax = fig.add_subplot()
+    nx.draw(graph, pos=pos, node_size=2500, node_color=color)
+
 
 def gen_4_plots_sets(metric):
     """ Plots out how modularity performs in the (I, E, S) space
@@ -21,10 +55,10 @@ def gen_4_plots_sets(metric):
              'College Football League',
              'Relativity Co-author Network',
              'Astrophysics Co-author Network'] 
-    parameters = [[1., 1., 1./float(graphs[0].number_of_edges())],
-                  [1., 1., 1./float(graphs[0].number_of_edges())],
-                  [1., 1., 1./float(graphs[0].number_of_edges())],
-                  [1., 1., 1./float(graphs[0].number_of_edges())]]
+    parameters = [[1., 0.5, 0.05],
+                  [1., 0.5, 0.05],
+                  [1., 0.5, 0.0025],
+                  [1., 0.7, 1./1500.]]
     for i in range(4):
         if metric == "modularity":
             dendo = CD.generate_dendogram(graphs[i])
@@ -240,8 +274,6 @@ def sets_corner_cases():
         
     ax.set_xlim(-1, 4)
     ax.set_ylim(-5, 5) 
-    
-    
     
     
     
