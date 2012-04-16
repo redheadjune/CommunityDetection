@@ -7,6 +7,8 @@ It is meant to be used to test the merits of different methods
 of finding communities.
 """
 
+"""
+# Commenting out code for stability until remove completely
 
 def measure_community(C, G, metric, param=None):
     
@@ -45,9 +47,10 @@ def measure_communities(S, G, metric, param=None):
         Exception("We have not implemented " +
                   metric + " for sets of communities")
 
-
+"""
+"""
 def linear_single(C, G, param):
-    """Compute the linear metric value of community C, a subset of graph G.
+    Compute the linear metric value of community C, a subset of graph G.
         
         Parameters
         ----------
@@ -64,7 +67,7 @@ def linear_single(C, G, param):
         Raises
         ------
         IOException: if any inputs are incorrectly formed
-    """
+    
     
     int_edge_count = 0
     ext_edge_count = 0
@@ -92,7 +95,7 @@ def linear_single(C, G, param):
     
             
 def linear_set(S, G, param):
-    """Compute the linear metric value of a set of communities.
+    Compute the linear metric value of a set of communities.
         
         Parameters
         ----------
@@ -110,7 +113,7 @@ def linear_set(S, G, param):
         Raises
         ------
         IOException: if any inputs are incorrectly formed
-    """
+    
     int_edge_count = 0
     ext_edge_count = 0
     
@@ -145,7 +148,7 @@ def linear_set(S, G, param):
     
 
 def modularity(partition, graph) :
-    """Compute the modularity of a partition of a graph
+    Compute the modularity of a partition of a graph
     This code is taken from
         #    Copyright (C) 2009 by
         #    Thomas Aynaud <thomas.aynaud@lip6.fr>
@@ -184,7 +187,7 @@ in networks. Physical Review E 69, 26113(2004).
     >>> G=nx.erdos_renyi_graph(100, 0.01)
     >>> part = best_partition(G)
     >>> modularity(part, G)
-    """
+    
 
     inc = dict([])
     deg = dict([])
@@ -207,6 +210,23 @@ in networks. Physical Review E 69, 26113(2004).
     for com in set(partition.values()) :
         res += (inc.get(com, 0.) / links) - (deg.get(com, 0.) / (2.*links))**2
     return res
+"""
+
+def m_modularity_module(graph, seed):
+    """ Computes the contibution of the single module to modularity
+    """
+    int_edges, ext_edges = in_and_out(graph, seed)
+    L = float(graph.number_of_edges())
+    return int_edges / L - (2 * int_edges + ext_edges)**2 / 4. / L**2
+
+
+def m_normalized_cut(graph, seed):
+    """ Computes the normalized cut value of the seed
+    """
+    int_edges, ext_edges = in_and_out(graph, seed)
+    left = 1.0 / float(2* int_edges + ext_edges)
+    right = 1.0 / float(2 * (graph.number_of_edges() - int_edges) + ext_edges)
+    return ext_edges * (left + right)
 
 
 def m_conductance(graph, seed):
@@ -295,14 +315,12 @@ def map_degree(in_degree, out_degree, graph, seed):
     """Returns the internal and external density of one
     community in the graph, based on the in and out degree.
     """
-    if len(seed) == 1:
-        I = 1.
-    else:
-        I = in_degree / float(len(seed) * (len(seed) - 1))
+    I = 1.
+    if len(seed) > 1:
+        I = 2 * in_degree / float(len(seed) * (len(seed) - 1))
     
-    if len(graph) == len(seed):
-        E = 0.
-    else:
+    E = 0.
+    if len(graph) != len(seed):
         E = out_degree / float(len(seed) * (len(graph) - len(seed)))
     
     return I, E
@@ -315,12 +333,11 @@ def in_and_out(graph, seed):
     out_degree = 0.
     in_degree = 0.
     for n in seed:
-        edges = graph.edges(n)
-        for (u,v) in edges:
-            if v not in seed:
+        for m in graph.neighbors(n):
+            if m not in seed:
                 out_degree += 1.
             else:
-                in_degree += 1.
+                in_degree += 0.5
                 
     return in_degree, out_degree
 

@@ -5,7 +5,8 @@ import matplotlib.pyplot as plt
 
 
 def plot_dendo(dendo, graph):
-    
+    """ Plots the (I(S), E(S)) points for all stages of the dendo
+    """
     colors = ['r', 'g', 'b', 'k', 'c', 'm']
     
     fig = plt.figure()
@@ -20,16 +21,12 @@ def plot_dendo(dendo, graph):
 
 
 def plot_set(ax, graph, group, color):
-    
-    # find the I,E values of all the members of the group
-    
+    """ Plots the (I(C), E(C)) points for all communities in the group
+    """
     I_values = []
     E_values = []
     for c in group:
-        I, E, rubish = CD.measure_community(c,
-                                           graph, 
-                                           'linearity',
-                                           param=(1., 1.))
+        I, E, rubish = CD.I_E(graph, c)
         E_values.append(E)
         I_values.append(I)
         

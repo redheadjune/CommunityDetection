@@ -3,7 +3,9 @@
 import CommunityDetection as CD
 
 def path_I_E_S(graph, sets):
-    """ Given a graph and a set of communities that the 
+    """ Given a graph and a set of communities, finds the series of (I, E, S)
+    values.
+    
     Parameters
     ----------
     graph : a networkx graph
@@ -21,7 +23,7 @@ def path_I_E_S(graph, sets):
     return I_path, E_path, S_path
     
 
-def path_I_E(graph, seed, f, compare):
+def path_I_E(graph, seed, f, compare, stop=100):
     """Traces the path of the best f metric community through the IE plane
     Parameters
     ----------
@@ -48,7 +50,7 @@ def path_I_E(graph, seed, f, compare):
     
     addition = True
     
-    while addition != None and len(order) < 100:
+    while addition != None and len(order) < stop:
         (next_I, next_E) = CD.I_E(graph, order)
         I_values.append(next_I)
         E_values.append(next_E)

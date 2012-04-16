@@ -70,7 +70,7 @@ def gen_4_plots_sets(metric):
         
         d_sets = CD.dendo_to_hierarchy(dendo)
         (I, E, S) = CD.path_I_E_S(graphs[i], d_sets)
-        gen_path_set(I, E, S, names[i], ylim=[0, .5])
+        gen_path_set(graphs[i], I, E, S, names[i], ylim=[0, .5])
         print "Finished with ", names[i]
 
 
@@ -142,11 +142,26 @@ def gen_4_plots_single(metric):
                             ax,
                             CD.m_conductance,
                             CD.compare_minimize,
+                            ylim=ylim[i][1],
+                            width = arrow_width[i])
+        elif metric == "modularity":
+            CD.draw_ls("modularity",
+                       n_ls[i],
+                       7,
+                       graphs[i].number_of_nodes(),
+                       ylim[i][1],
+                       L=graphs[i].number_of_edges())
+            gen_path_single(graphs[i],
+                            seeds[i],
+                            names[i],
+                            ax,
+                            CD.m_modularity_module,
+                            CD.compare_maximize,
                             ylim=ylim[i],
                             width = arrow_width[i])
     
 
-def gen_path_set(I_path, E_path, S_path, name, ylim=[0, 1],
+def gen_path_set(graph, I_path, E_path, S_path, name, ylim=[0, 1],
                  legend=False, width=0.01):
     """ Given an I E S path plots
     Parameters
@@ -162,8 +177,14 @@ def gen_path_set(I_path, E_path, S_path, name, ylim=[0, 1],
     fig = plt.figure()
     ax = fig.add_subplot(111)
     
-    CD.plot_path(I_path[:], E_path[:], ax, 'r', name, width)    
+    CD.plot_path(I_path[:], E_path[:], ax, 'r', name, width)   
     
+    # plot corner cases
+    ax.plot(1, 0, 'kD', label='Ideal', markersize=10)
+    (graph_I, graph_E) = CD.I_E(graph, graph.nodes())
+    ax.plot(graph_I, 0, 'mD', label='Entire Graph', markersize=10)       
+
+    # set the dimensions and labels
     ax.set_title(name, fontsize=24)    
     plt.xticks([0, .3, .7, 1], ['0', '0.3', '0.7', '1'])
     plt.yticks(ylim, [str(y) for y in ylim])
@@ -209,7 +230,7 @@ def gen_path_single(graph, seed, name, ax, metric, comp, ylim=[0, .3],
     ax.set_title(name, fontsize=24)    
     plt.xticks([0, .3, .7, 1], ['0', '0.3', '0.7', '1'])
     plt.yticks(ylim, [str(y) for y in ylim])
-    ax.set_xlim(-.01, 1.01)
+    ax.set_xlim(-0.01, 1.01)
     ax.set_ylim(ylim[0] - width/2., ylim[1] + width/2.)
     ax.set_xlabel(r'$I(C)$', fontsize=24)
     ax.set_ylabel(r'$E(C)$', fontsize=24)
@@ -268,8 +289,8 @@ def sets_corner_cases():
             node_color='r',
             node_size=30,
             with_labels=False)
-    for i in range(2):
-        community = patch.Circle((.5 + 2*i, 0), .7, facecolor='b', alpha=0.3)
+    for i in range(1):
+        community = patch.Circle((2, 0), .5, facecolor='b', alpha=0.3)
         ax.add_artist(community)   
         
     ax.set_xlim(-1, 4)

@@ -60,11 +60,17 @@ def PlotModularity(limits, plt, ax, n_LS, mag_C, mag_V, L):
     
     print 'min level set, ', L_min, 'max level set for modularity, ', L_max
     
-    def f(x, Ls):
+    def f(x, Ls, mag_C, mag_V):
         return (np.sqrt(p*x - Ls) - p/2*x)/q
         
-    plot_ls([b0, b1, a0, a1, L_min, L_max], plt, n_LS, f, lambda x: x < 0)
-    
+    plot_ls([b0, b1, a0, a1], 
+            get_modularity_corners(L),
+            n_LS,
+            mag_C,
+            mag_V,
+            f,
+            lambda x: x < 0,
+            "A Module's Level Sets")
     plt.xticks([0.0, .3, .7, 1.0], [0, 0.3, 0.7, 1])
     plt.yticks([0.0, .002], [0, 0.002])
     plt.xlabel(r'$I(C)$', fontsize=24)
@@ -146,7 +152,7 @@ def PlotModularityRatio(limits, plt, n_LS, mag_C, mag_V, L):
                 fontsize=24)
     
     
-def draw_ls(metric, n_ls, mag_C, mag_V, ylim, new_fig=False):
+def draw_ls(metric, n_ls, mag_C, mag_V, ylim, new_fig=False, L=0):
     """ Given a metric, draws the level sets
     Parameters
     ----------
@@ -182,10 +188,10 @@ def draw_ls(metric, n_ls, mag_C, mag_V, ylim, new_fig=False):
                 lambda y: y<0,
                 "Cut Ratio, Edges Cut, & Expansion Level Sets")
     elif metric == "internal":
-        delta = (limits[1] - limits[0]) / float(n_ls + 1)
+        delta = 1.0 / float(n_ls + 1)
         for i in range(n_ls + 1):
-            x = [limits[0] + i * delta, limits[0] + i * delta]
-            plt.plot(x, limits[2:4], 'g-')
+            x = [i * delta, i * delta]
+            plt.plot(x, [0, ylim], 'g-')
     elif metric == "conductance":
         plot_ls([0, 1, 0, ylim],
                 conductance_corners,
@@ -193,8 +199,47 @@ def draw_ls(metric, n_ls, mag_C, mag_V, ylim, new_fig=False):
                 mag_C,
                 mag_V,
                 conductance_y,
-                lambda y: y < 0.5,
+                lambda y: y > 0.5,
                 "Conductance Level Sets")
+    elif metric == "modularity":
+        plot_ls([0, 1, 0, ylim],
+                get_modularity_corners(L),
+                n_ls,
+                mag_C,
+                mag_V,
+                get_modularity_y(L),
+                lambda y: y > 0,
+                "A Single Module's Level Sets")
+        
+        
+def get_modularity_corners(L):
+    """ Provides a warpped function with access to L
+    """
+    def modularity_corners(mag_C, mag_V, ylim):
+        """ Returns the modularity metric values at each of the corners
+        """
+        p = mag_C * (mag_C - 1) / L
+        q = mag_V * (mag_V - mag_C)/ L
+        return [0,
+                p - p**2,
+                - q**2 * ylim **2,
+                p - (p + q * ylim)**2]
+    return modularity_corners
+
+
+def get_modularity_y(L):
+    """ Provides a wrapped function that has access to L
+    Allows all other previously written functions to remain the same
+    """
+    def modularity_y(x, ls, mag_C, mag_V):
+        """ Finds the y intersept for internal density x and level set ls
+        """
+        p = mag_C * (mag_C - 1) / L
+        q = mag_V * (mag_V - mag_C)/ L
+        inside = max(p*x - ls, 0.)
+        return (np.sqrt(inside) - p/2*x)/q
+    
+    return modularity_y
         
     
 def volume_corners(mag_C, mag_V, ylim):
