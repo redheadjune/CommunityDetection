@@ -210,10 +210,56 @@ def draw_ls(metric, n_ls, mag_C, mag_V, ylim, new_fig=False, L=0):
                 get_modularity_y(L),
                 lambda y: y > 0,
                 "A Single Module's Level Sets")
+    elif metric == "linearity":
+        plot_ls([0, 1, 0, ylim],
+                get_linearity_corners(L),
+                n_ls,
+                mag_C,
+                mag_V,
+                get_linearity_single_y(L),
+                lambda y: y < 0,
+                "Linearity for Single Communities: Level Sets")
+    
+def linearity_k():
+    """ Charts how linearity responds to community size
+    """
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.plot([0, 1], [1, 1], 'r-')
+    ax.set_ylim(0, 2)
+    ax.set_xlim(0, 1)
+    plt.xticks([0.0, .3, .7, 1.0], [0, 0.3, 0.7, 1])
+    plt.yticks([0, 1, 2], [0, 1, 2])
+    plt.xlabel(r'$k$', fontsize=24)
+    plt.ylabel(r'Metric$(k)$', fontsize=24)
+    plt.title(r"$k$'s Influence on Linearity", fontsize=20) 
+    plt.show()
+    
+    
+def get_linearity_single_y(param):
+    """ Provides a wrapped function with access to param = (a, b)
+    """
+    def linearity_single_corners(x, ls, mag_C, mag_V):
+        """ Returns the linearity values at each of the corners
+        """
+        return (param[0] * x - ls) / float(param[1])
+    
+    return linearity_single_corners
+            
+    
+def get_linearity_corners(param):
+    """ Provides a wrapped function with access to param = (a, b)
+    """
+    def linearity_corners(mag_C, mag_V, ylim):
+        """ Returns the linearity values at each of the corners
+        """
+        return [0, param[0], -param[1] * ylim, param[0] - param[1] * ylim]
+    
+    return linearity_corners
         
         
 def get_modularity_corners(L):
-    """ Provides a warpped function with access to L
+    """ Provides a wrapped function with access to L
     """
     def modularity_corners(mag_C, mag_V, ylim):
         """ Returns the modularity metric values at each of the corners

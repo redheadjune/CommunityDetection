@@ -26,7 +26,7 @@ def linearity_run(graph, __A, __B, __C):
     """
     
     # create the dendogram
-    dendo = create_dendogram(graph.copy(), __A, __B, __C)
+    dendo = create_dendogram_linear(graph.copy(), __A, __B, __C)
     
     # traces the final community by marching through the dendo's heirarchy
     partition = dendo[0].copy()
@@ -37,23 +37,33 @@ def linearity_run(graph, __A, __B, __C):
     return partition
     
     
-def create_dendogram(graph, __A, __B, __C):
+def create_dendogram_linear(graph, __A, __B, __C):
     """ Creates the dendogram according to the paper
     """
+    delta = __B / 100.
+    temp_b = delta
     nedges = 2. * graph.number_of_edges()
     
     bar = Bar(graph, nedges, __A, __B, __C)
     
     dendo = [bar.nodes_to_bottles()]
     
-    changed = True
     lin = bar.lin_metric()
     
-    while changed:
+    # This if for starting from maximal cliques
+    clique_game(graph, bar)
+    dendo.append(bar.nodes_to_bottles())
+    new_graph = compress_graph(graph, bar)
+    del(bar)
+    del(graph)
+    graph = new_graph
+    bar = Bar(graph, nedges, __A, temp_b, __C)
+    
+    changed = True    
+    while changed and temp_b <= __B:
         changed = False
         
         shell_game(graph, bar)
-        
         newlin = bar.lin_metric()
         
         if newlin > lin:
@@ -61,14 +71,14 @@ def create_dendogram(graph, __A, __B, __C):
             lin = newlin
             
             dendo.append(bar.nodes_to_bottles())
-            newgraph = compress_graph(graph, bar)
-            del(bar) # may have to provide a deconstructor
+            new_graph = compress_graph(graph, bar)
+            del(bar)
             del(graph)
-            graph = newgraph
-            bar = Bar(graph, nedges, __A, __B, __C)
-            #print bar
-            
-        #print "    **level done**"
+            graph = new_graph
+            bar = Bar(graph, nedges, __A, temp_b, __C)
+        else:
+            temp_b += delta
+            changed = True
             
     return dendo
     
@@ -125,4 +135,20 @@ def shell_game(graph, bar):
         if newlin > lin:
             changed = True
             lin = newlin
-
+            
+            
+def clique_game(graph, bar):
+    """ Moves the nodes of the graph into maximal cliques
+    """
+    gen_cliques = nx.find_cliques(graph)
+    cliques = [c for c in gen_cliques]
+    cliques.sort(key=lambda c: len(c), reverse=True)
+    compressed = set()
+    
+    for c in cliques:
+        if len(c) > 2 and len(set(c).intersection(compressed)) == 0:
+            compressed.update(c)
+            for n in c[1:]:
+                bhome = bar.bottle_containing(n)
+                bestneighbor = bar.bottle_containing(c[0])
+                bar.swap(graph, n, bhome, bestneighbor)

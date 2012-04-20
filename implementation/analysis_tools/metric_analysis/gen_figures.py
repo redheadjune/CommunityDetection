@@ -44,7 +44,7 @@ def gen_visually_clear():
     nx.draw(graph, pos=pos, node_size=2500, node_color=color)
 
 
-def gen_4_plots_sets(metric):
+def gen_4_plots_sets(metric, overlap=False):
     """ Plots out how modularity performs in the (I, E, S) space
     """
     graphs = [CD.karate_club_graph(),
@@ -55,23 +55,65 @@ def gen_4_plots_sets(metric):
              'College Football League',
              'Relativity Co-author Network',
              'Astrophysics Co-author Network'] 
-    parameters = [[1., 0.5, 0.05],
-                  [1., 0.5, 0.05],
-                  [1., 0.5, 0.0025],
-                  [1., 0.7, 1./1500.]]
-    for i in range(4):
+    parameters = [[1., 5., 3.5/float(graphs[0].number_of_nodes())],
+                  [1., 1., 5./float(graphs[1].number_of_nodes())],
+                  [1., 5., 5./float(graphs[2].number_of_nodes())],
+                  [1., 5., 10./float(graphs[3].number_of_nodes())]]
+    for i in range(2, 3):
+        if overlap:
+            fig = plt.figure(i+1)
+            ax = fig.add_subplot(111)
+        else:
+            fig = False
+            
         if metric == "modularity":
+            color = 'r'
             dendo = CD.generate_dendogram(graphs[i])
+            d_sets = CD.dendo_to_hierarchy(dendo)
         elif metric == "linearity":
-            dendo = CD.create_dendogram(graphs[i],
-                                        parameters[i][0],
-                                        parameters[i][1],
-                                        parameters[i][2])
-        
-        d_sets = CD.dendo_to_hierarchy(dendo)
+            color = 'r'
+            dendo = CD.create_dendogram_linear(graphs[i],
+                                               parameters[i][0],
+                                               parameters[i][1],
+                                               parameters[i][2])
+            print "Finished Dendo"
+            d_sets = CD.dendo_to_hierarchy(dendo)
+            sets = [set(c[:]) for c in d_sets[-1]]
+            d_sets.append(CD.linear_expand(graphs[i],
+                                           sets,
+                                           parameters[i][0],
+                                           parameters[i][1],
+                                           parameters[i][2]))
+            print "Finished Expansion"
+            CD.draw_ls("linearity",
+                       20,
+                       7,
+                       graphs[i].number_of_nodes(),
+                       1.0,
+                       L=parameters[i][:2])            
+
+        print "Created a set of ", len(d_sets[-1]), "communities"
         (I, E, S) = CD.path_I_E_S(graphs[i], d_sets)
-        gen_path_set(graphs[i], I, E, S, names[i], ylim=[0, .5])
+        gen_path_set(graphs[i],
+                     I,
+                     E,
+                     S,
+                     names[i],
+                     ylim=[0, 1.],
+                     fig=fig,
+                     color=color)
         print "Finished with ", names[i]
+        """
+        # code for putting in known set of community solutions
+        fig = plt.figure(1)
+        ax = fig.add_subplot(111)
+        ax.plot(.249088, 0.1282, 'k*', markersize=20)
+        plt.show()
+        fig = plt.figure(2)
+        ax = fig.add_subplot(111)
+        ax.plot(.753346, 0.357, 'k*', markersize=20)
+        plt.show()
+        """
 
 
 def gen_4_plots_single(metric):
@@ -97,6 +139,7 @@ def gen_4_plots_single(metric):
             [0, .02],
             [0, .01]]
     k = [7/34., 7/115., 7/270., 7/1550.]
+    ab = [[1., 12.], [1., 35.], [1., 10.], [1., 1000.]]
     arrow_width = [0.01, 0.0025, 0.0007, 0.0005]
     #n_ls = [40, 160, 320, 640] # use for external
     #n_ls = [40, 40, 30, 30] # use for volume
@@ -142,7 +185,7 @@ def gen_4_plots_single(metric):
                             ax,
                             CD.m_conductance,
                             CD.compare_minimize,
-                            ylim=ylim[i][1],
+                            ylim=ylim[i],
                             width = arrow_width[i])
         elif metric == "modularity":
             CD.draw_ls("modularity",
@@ -159,10 +202,26 @@ def gen_4_plots_single(metric):
                             CD.compare_maximize,
                             ylim=ylim[i],
                             width = arrow_width[i])
+        elif metric == "linearity":
+            CD.draw_ls("linearity",
+                       n_ls[i],
+                       7,
+                       graphs[i].number_of_nodes(),
+                       ylim[i][1],
+                       L=ab[i])
+            gen_path_single(graphs[i],
+                            seeds[i],
+                            names[i],
+                            ax,
+                            CD.m_linearity_single,
+                            CD.compare_maximize,
+                            ylim=ylim[i],
+                            width=arrow_width[i],
+                            param=ab[i])
     
 
 def gen_path_set(graph, I_path, E_path, S_path, name, ylim=[0, 1],
-                 legend=False, width=0.01):
+                 legend=False, width=0.01, fig=False, color='r'):
     """ Given an I E S path plots
     Parameters
     ----------
@@ -174,10 +233,12 @@ def gen_path_set(graph, I_path, E_path, S_path, name, ylim=[0, 1],
     legend : whether or not to show legend (not likely)
     width : the width of the arrow head
     """
-    fig = plt.figure()
+    if not fig:
+        fig = plt.figure()
+        
     ax = fig.add_subplot(111)
     
-    CD.plot_path(I_path[:], E_path[:], ax, 'r', name, width)   
+    CD.plot_path(I_path[:], E_path[:], ax, color, name, width)   
     
     # plot corner cases
     ax.plot(1, 0, 'kD', label='Ideal', markersize=10)
@@ -203,8 +264,8 @@ def gen_path_set(graph, I_path, E_path, S_path, name, ylim=[0, 1],
     plt.savefig(name + ".pdf")  
     
     
-def gen_path_single(graph, seed, name, ax, metric, comp, ylim=[0, .3],
-                    legend=False, width=0.01): 
+def gen_path(graph, seed, name, ax, metric, comp, ylim=[0, .3],
+                    legend=False, width=0.01, param=None): 
     """ Generates and plots the I E path and manages the space
     Parameters
     ----------
@@ -218,7 +279,11 @@ def gen_path_single(graph, seed, name, ax, metric, comp, ylim=[0, .3],
     width : the width of the arrow head
     """
     # plot metric optimized path
-    (I_path, E_path, order) = CD.path_I_E(graph, seed[:], metric, comp)
+    (I_path, E_path, order) = CD.path_I_E(graph,
+                                          seed[:],
+                                          metric,
+                                          comp,
+                                          param=param)
     CD.plot_path(I_path[:], E_path[:], ax, 'r', name, width)
     
     # plot corner cases
