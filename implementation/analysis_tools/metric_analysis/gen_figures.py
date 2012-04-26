@@ -9,7 +9,7 @@ import matplotlib.patches as patch
 """
 This is for generating figures for the paper
 """
-def gen_visually_clear():
+def gen_sample_graph():
     """ Generates a subset of friendships for a visually clear graph
     """
     people = ["June", "Scott", "Kyle", "Amy", "Rebecca", "Tim", "Maarika",
@@ -139,7 +139,8 @@ def gen_4_plots_single(metric):
             [0, .02],
             [0, .01]]
     k = [7/34., 7/115., 7/270., 7/1550.]
-    ab = [[1., 12.], [1., 35.], [1., 10.], [1., 1000.]]
+    ab = [[1., 7.5], [1., 50.], [1., 250.], [1., 500.]]
+    #ab = [[1., 12.], [1., 35.], [1., 10.], [1., 1000.]]
     arrow_width = [0.01, 0.0025, 0.0007, 0.0005]
     #n_ls = [40, 160, 320, 640] # use for external
     #n_ls = [40, 40, 30, 30] # use for volume
@@ -264,7 +265,7 @@ def gen_path_set(graph, I_path, E_path, S_path, name, ylim=[0, 1],
     plt.savefig(name + ".pdf")  
     
     
-def gen_path(graph, seed, name, ax, metric, comp, ylim=[0, .3],
+def gen_path_single(graph, seed, name, ax, metric, comp, ylim=[0, .3],
                     legend=False, width=0.01, param=None): 
     """ Generates and plots the I E path and manages the space
     Parameters
@@ -284,6 +285,7 @@ def gen_path(graph, seed, name, ax, metric, comp, ylim=[0, .3],
                                           metric,
                                           comp,
                                           param=param)
+    print "Last point for ", name, " I ", I_path[-1], " E ", E_path[-1]
     CD.plot_path(I_path[:], E_path[:], ax, 'r', name, width)
     
     # plot corner cases
@@ -308,6 +310,31 @@ def gen_path(graph, seed, name, ax, metric, comp, ylim=[0, .3],
     # save the figure
     plt.savefig(name + ".eps")
     plt.savefig(name + ".pdf")
+    
+    
+def add_single_benchmarks():
+    """ Adds the value of communities produced by metrics for single communities
+    """
+    vol = [(0.139, 0.0), (0.0935, 0.0), (0.0031, 0.0), (0.0016, 0.)]
+    ext = [(0.25, 0.0346), (0.4667, 0.0393), (0.0767, 0.0012), (0.4667, 0.0013)]
+    cond = [(0.2339, 0.0351), (0.6889, 0.0438), (0.3679, 0.0014), (0.5929, 0.0002)]
+    internal = [(1.0, .2151), (1.0, 0.0929), (1.0, 0.004), (1.0, 0.0008322)]
+    all_metrics = [vol, ext, cond, internal]
+    color = ['#00FF00', '#00FFFF', '#FF1493', '#FFFF00']
+    for i in range(1, 5):
+        fig = plt.figure(i)
+        ax = fig.add_subplot(111)
+        plotted = []
+        for j in range(4):
+            plotted.append(ax.plot(all_metrics[j][i-1][0],
+                                   all_metrics[j][i-1][1],
+                                   'd',
+                                   color=color[j],
+                                   markersize=15))
+        ax.legend(plotted,
+                  ["Volume", "Cut Ratio", "Conductance", "Internal Density"],
+                  loc=2)
+        
     
 def sets_corner_cases():
     """ Plots the three corner cases of optimizing 2 but not 3 parameters of

@@ -61,6 +61,9 @@ def path_I_E(graph, seed, f, compare, param=None, stop=100):
             order.append(addition)
         elif addition != None:
             addition = None
+            
+    if len(order) == 100:
+        print "The metric was terminated by the maximum number of steps"
         
     return I_values, E_values, order
    
