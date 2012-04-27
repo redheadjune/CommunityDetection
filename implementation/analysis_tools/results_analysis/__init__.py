@@ -1,5 +1,8 @@
 
+from analyze_network import *
+from color_generator import *
+from community_plots import *
 
-from karate_results import *
-
-import karate_results
+import analyze_network
+import color_generator
+import community_plots

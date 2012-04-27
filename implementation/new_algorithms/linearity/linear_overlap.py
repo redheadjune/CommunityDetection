@@ -44,9 +44,6 @@ def get_int_counts(graph, sets):
         ext_edges -= set(c_int_edges)
         n_int_edges += len(c_int_edges)
         base_int_edges += len(c) * (len(c) - 1)
-        
-    print "found", len(ext_edges), "external edges out of ", graph.number_of_edges()
-    print "found", n_int_edges, " internal edges out of ", base_int_edges
     
     return n_int_edges, base_int_edges, ext_edges
  

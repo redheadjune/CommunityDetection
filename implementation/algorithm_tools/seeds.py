@@ -6,7 +6,7 @@ import networkx as nx
 """ This module is for providing different ways of getting seed communities.
 """
 
-def distant_seeds(graph, method='mod'):
+def distant_seeds(graph, method='mod', min_size=4):
     """Finds seeds that are far apart in the graph
     Parameters
     ----------
@@ -25,7 +25,7 @@ def distant_seeds(graph, method='mod'):
     seeds = []
     clique_size = 20
     
-    while graph.number_of_nodes() > 0 and clique_size >= 4:
+    while graph.number_of_nodes() > 0 and clique_size >= min_size:
         more = True
         gen_cliques = nx.find_cliques(graph)
         clique = gen_cliques.next()
@@ -157,13 +157,18 @@ def core_seeds(graph, ithresh, csize, method='mod'):
                                                    1,
                                                    0.5 * len(core),
                                                    method)
-            
-            for seed in possibleseeds:
-                subgraph = graph.subgraph(seed)
+            # limit to only the largest eligable seed
+            possibleseeds.sort(key= lambda s: len(s), reverse=True)
+            found_one = False
+            at_i = 0
+            while not found_one:
+                subgraph = graph.subgraph(possibleseeds[at_i])
                 idensity = CD.get_internal_density(subgraph)
                 if idensity >= ithresh:
-                    accounted.update(seed)
-                    seeds.append(list(seed))
+                    found_one = True
+                    accounted.update(possibleseeds[at_i])
+                    seeds.append(list(possibleseeds[at_i]))
+                at_i += 1
         
     return seeds
     

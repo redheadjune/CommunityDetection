@@ -18,7 +18,9 @@ def expand_all(graph, seeds):
     found_order = []
     
     for s in seeds:
-        c, cand, order, stat_hist, sd_hist, closure_hist = expand(graph, s, 600, forced=True)
+        c, cand, order, stat_hist, sd_hist, closure_hist = expand(graph,
+                                                                  s,
+                                                                  600)
         found_c.append(c)
         found_cand.append(cand)
         found_order.append(order)

@@ -246,3 +246,57 @@ def vis_local_com(communities, n, graph, sub_graph):
     plt.show()
     
     return node_colors
+
+
+def vis_distribution(graph, c):
+    """ Visualizes the distributions of connectivity
+    Parameters
+    ----------
+    graph : the networkx graph
+    c : the set of nodes within the community
+    
+    Returns
+    -------
+    creates and stores a plot of the connectivity into the community
+    """
+    in_node_degree = {}
+    out_node_degree = {}
+    
+    for n in c:
+        in_node_degree[n] = 0
+        for m in graph.neighbors(n):
+            if m in c:
+                in_node_degree[n] += 1
+            else:
+                out_node_degree[m] = out_node_degree.get(m, 0) + 1
+                
+    for char in ['E', 'P']:
+        if char == 'P':
+            for n in in_node_degree:
+                in_node_degree[n] = in_node_degree[n] / float(graph.degree()[n])
+            for m in out_node_degree:
+                out_node_degree[m] = out_node_degree[m] / \
+                    float(graph.degree()[m])
+                
+            bins = range(51)
+            bins = [b / 50. for b in bins]
+            
+        else:
+            max_degree = max(max(in_node_degree.values()),
+                             max(out_node_degree.values()))
+            bins = range(max_degree+1)
+            bins = [b + 0.5 for b in bins]
+            
+        fig = plt.figure()
+        ax = fig.add_subplot(111)        
+        bins_in = ax.hist([in_node_degree.values(), out_node_degree.values()],
+                          bins=bins,
+                          color=['r', 'k'],
+                          label=['Internal nodes', 'External nodes'])
+        ax.legend()
+        ax.set_ylabel("Number of Nodes", fontsize=24)
+        ax.set_xlabel(char + "edges into $C$", fontsize=24)
+        ax.set_title("Distribution of edges into $C$.", fontsize=24)
+        plt.show()
+        plt.savefig(char + 'distribution.eps')
+        plt.savefig(char + 'distribution.pdf')
