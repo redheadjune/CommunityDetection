@@ -68,6 +68,12 @@ class Bar :
         """
          
         return barstr
+    
+    
+    def get_I_E_S(self):
+        """ Returns the I(S), E(S), and |S| value of the bar
+        """
+        return self.intedges/self.idealint, self.extedges/self.idealext, self.s
         
         
     def shift(self, graph, n):

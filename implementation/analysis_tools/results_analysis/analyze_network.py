@@ -25,12 +25,12 @@ def all_detection_methods(graph, param=None):
     print "Finished Linearity"
     
     # Find the communities in parallel
-    if graph.number_of_nodes() < 200:
-        seeds = CD.core_seeds(graph, 0.55, param[3])
+    if graph.number_of_nodes() < 3000:
+        seeds = CD.core_seeds(graph, param[5], param[3])
     else:
         seeds = CD.distant_seeds(graph, min_size=param[3])
         
-    all_info = CD.expand_all(graph, seeds)
+    all_info = CD.expand_all(graph, seeds, param[4])
     communities = all_info[0]
     found['Parallel Communities'] = [c.nodes.keys() for c in communities]
     print "Finished Parallel"

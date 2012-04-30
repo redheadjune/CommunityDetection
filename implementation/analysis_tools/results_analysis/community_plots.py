@@ -5,17 +5,195 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 
+def gen_overlap_fig(communities, xticks, yticks, labels, name, colors):
+    """ Generates a histogram to represent the number of communities each node
+    belongs to.
+    Parameters
+    ----------
+    xticks : the xticks to use
+    yticks:
+    labels : a list of labels
+    name : the name to store everything under
+    colors : list of colors to use
+    """
+    belongs = []
+    for c_set in communities:
+        overlap = {}
+        for c in c_set:
+            for n in c:
+                overlap[n] = overlap.get(n, 0) + 1
+                
+        belongs.append(overlap.values())
+    
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    bins = ax.hist(belongs,
+                   40,
+                   color=colors,
+                   label=labels)
+    ax.legend()
+    ax.set_title('Communities a Node belongs to.', fontsize=24)
+    ax.set_ylabel('Number of Nodes', fontsize=24)
+    ax.set_xlabel('Number of Communities', fontsize=24)
+    ax.set_xlim([0, max(xticks)])
+    ax.set_ylim([0, max(yticks)])
+    plt.xticks(xticks, xticks)
+    plt.yticks(yticks, yticks)
+    plt.show()
+    plt.savefig(name + '_n_communities.eps')
+    plt.savefig(name + '_n_communities.pdf')    
+
+
+def gen_csize_fig(xticks, yticks, data, labels, name, colors):
+    """ Generates the histograms for the size of communities
+    Parameters
+    ----------
+    xticks : the xticks to use
+    yticks:
+    data : an array of arrays
+    labels : a list of labels
+    name : the name to store everything under
+    colors : list of colors to use
+    """
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    bins = ax.hist(data,
+                   200,
+                   color=colors,
+                   label=labels,
+                   normed=True)
+    ax.legend()
+    ax.set_title('Community Sizes', fontsize=24)
+    ax.set_ylabel('Number of Communities', fontsize=24)
+    ax.set_xlabel('Community Size', fontsize=24)
+    ax.set_xlim(0, max(xticks))
+    ax.set_ylim(0, max(yticks))
+    plt.xticks(xticks, xticks)
+    plt.yticks(yticks, yticks)
+    plt.show()
+    plt.savefig(name + '_csize.eps')
+    plt.savefig(name + '_csize.pdf')
+    
+    
+def gen_paper_fig_ch5():
+    """ Generates the
+    """
+    find_karate_communities()
+    find_football_communities()
+    r_communities = gen_relativity_analysis()
+    
+    
+def gen_relativity_analysis():
+    """ Generates all figures in ch5 for the relativity coauthor network
+    """
+    rgraph = CD.coauthor_relativity()
+    rparam = [1., 5., 5./2694., 3, 4, .8]
+    roptions = CD.all_detection_methods(rgraph, param=rparam)  
+    
+    find_coauthor_communities(rgraph,
+                              rparam,
+                              'Modularity Communities',
+                              24,
+                              'relativity_24_',
+                              roptions)
+    find_coauthor_communities(rgraph,
+                              rparam,
+                              'Modularity Communities',
+                              29,
+                              'relativity_29_',
+                              roptions)
+    gen_csize_fig([0, 40, 80],
+                  [0, 30, 60],
+                  [filter(lambda a: a<100, [len(c) for c in roptions[key]])
+                   for key in ['Linearity Communities',
+                               'Parallel Communities']],
+                   ['Linearity', 'Parallel'],
+                   'relativity_linear_parallel',
+                   ['r', 'k'])
+              
+    gen_csize_fig([0, 100, 200],
+                  [0, 5],
+                  [len(c) for c in roptions['Modularity Communities']],
+                  ['Modularity'],
+                  'relativity_module',
+                  ['b'])
+    
+    gen_overlap_fig([roptions['Linearity Communities'],
+                     roptions['Parallel Communities']],
+                    [0, 15],
+                    [0, 200],
+                    ['Linear', 'Parallel'],
+                    'relativity_linear_parallel',
+                    ['r', 'k'])
+    return roptions
+
+
+def gen_cond_analysis():
+    """ Generates all figures for the condensed matter network
+    """
+    cgraph = CD.coauthor_cond()
+    cparam = [1., 1., 5./16966., 5, -1, .6]
+    coptions = CD.all_detection_methods(cgraph, param=cparam)
+
+    gen_csize_fig([0, 50, 100],
+                  [0, .07],
+                  [[len(c) for c in coptions[key]]
+                   for key in ['Linearity Communities',
+                               'Parallel Communities',
+                               'Modularity Communities']],
+                   ['Linearity', 'Parallel', 'Modularity'],
+                   'cond_',
+                   ['r', 'k', 'b'])
+    
+    gen_overlap_fig([coptions['Linearity Communities'],
+                     coptions['Parallel Communities']],
+                    [0, 15, 30],
+                    [0, 250, 500],
+                    ['Linear', 'Parallel'],
+                    'cond_linear_parallel',
+                    ['r', 'k'])    
+    return coptions
+    
+
+def find_coauthor_communities(graph, param, source, i, prefix, options=None):
+    """ Finds the communities produced by different methods for the astro
+    citation network
+    """
+    if options == None:
+        options = CD.all_detection_methods(graph, param=param)
+    
+    interest = CD.get_ball(graph, options[source][i], 0)
+    print "Displaying and computing for a subset of ", len(interest), " nodes."
+    sgraph = nx.subgraph(graph, interest)
+    
+    cleaned = {}
+    for key in options:
+        filtered = [filter(lambda n: n in interest, c) for c in options[key]]
+        filtered = filter(lambda c: len(c) > 0, filtered)
+        cleaned[key] = filtered
+        cleaned[key] = CD.clean_of_duplicate_c(cleaned[key])
+
+    compare_methods(sgraph, param, prefix, options=cleaned)
+    
+
 def find_karate_communities():
     """ Finds the communities produced by different methods
+    Uses compare to plot.
     """
     kgraph = CD.karate_club_graph()
     known = CD.karate_known_c()
-    compare_methods(kgraph, param=[1., 5., 3.5/34., 3], known=known)
+    compare_methods(kgraph,
+                    [1., 5., 3.5/34., 3, 0, .55],
+                    'karate_',
+                    known=known, 
+                    color_map={27:0, 1:2, 17:3, 25:4})
     
     
 def why_parallel_karate():
     """ A plot to explain why the parallel method does not work well on small
     graphs
+    
+    Could use with some mods
     """
     graph = CD.karate_club_graph()
     known = CD.karate_known_c()  
@@ -37,7 +215,8 @@ def why_parallel_karate():
     
     
 def find_football_communities():
-    """ Finds the communities produced for the football network
+    """ Finds the communities produced for the football network, uses compare
+    methods to graph
     """
     fgraph = CD.football_graph()
     known = CD.football_known_c()
@@ -62,10 +241,17 @@ def find_football_communities():
         for n, place in pos_local.iteritems():
             pos[n] = place + np.array([off_x, off_y])
     
-    compare_methods(fgraph, param=[1., 1., 5./115., 4], known=known, pos=pos)
+    compare_methods(fgraph,
+                    [1., 1., 5./115., 4, 0, .7],
+                    'football_',
+                    known=known,
+                    pos=pos,
+                    color_map={76:1, 11:2, 7:3, 102:4, 104:5, 47:6, 98:7,
+                               96:8, 23:9, 94:10, 27:0})
     
     
-def compare_methods(graph, param, known=None, pos=None):
+def compare_methods(graph, param, prefix, known=None, pos=None,
+                    color_map={}, options=None):
     """ Given the graph compares all detection methods
     Parameter
     ---------
@@ -73,38 +259,16 @@ def compare_methods(graph, param, known=None, pos=None):
     param : the parameters of [a, b, c, min_seed_size]
     known : a list of communities if known
     
-    BUGS
-    ----
-    solve overlapping
     """
-    
-    options = CD.all_detection_methods(graph, param=param)
-    
-    print "Found a bunch of communities: "
-    print [(k, len(options[k])) for k in options]
-    
-    # manipulations to options for the figures
-    # add in known
+    if options == None:
+        options = CD.all_detection_methods(graph, param=param)
+        
     if known != None:
         options['Known Communities'] = known
-      
-    # switch order linear communities to correspond to other colors for karate
-    #options['Linearity Communities'] = [options['Linearity Communities'][1],
-    #                                    options['Linearity Communities'][0]]
-    #order_lin = [1, 0] # for karate
-    color_map = {76:1, 11:2, 7:3, 102:4, 104:5, 47:6, 98:7, 96:8,23:9,
-                 94:10, 27:0}
     
     color = ['#00FF00', '#00FFFF', '#FF1493', '#FFFF00', '#8A2BE2', '#FF7F50',
-             '#008B8B', '#FF00FF', '#F08080', '#BA55D3', '#00FA9A', '#A0522D',
-             '#D2B48C', '#8B0000',
-             'b',
-             '#00FF00', '#00FFFF', '#FF1493', '#FFFF00', '#8A2BE2', '#FF7F50',
-             '#008B8B', '#FF00FF', '#F08080', '#BA55D3', '#00FA9A', '#DA70D6',
-             '#00FF00', '#00FFFF', '#FF1493', '#FFFF00', '#8A2BE2', '#FF7F50',
-             '#008B8B', '#FF00FF', '#F08080', '#BA55D3', '#00FA9A', '#DA70D6',
-             '#00FF00', '#00FFFF', '#FF1493', '#FFFF00', '#8A2BE2', '#FF7F50',
-             '#008B8B', '#FF00FF', '#F08080', '#BA55D3', '#00FA9A', '#DA70D6',]
+             '#FF00FF', '#F08080', '#BA55D3', '#00FA9A', '#A0522D',
+             '#D2B48C', '#8B0000', 'b']
 
     def get_color(store, communities, overlap=[]):
         offset = 0
@@ -115,7 +279,7 @@ def compare_methods(graph, param, known=None, pos=None):
                     c_name = color_map[n]
                     
             if c_name == None:
-                c_name = len(color_map) + offset
+                c_name = (len(color_map) + offset) % len(color)
                 offset += 1
             
             for n in c:
@@ -123,6 +287,7 @@ def compare_methods(graph, param, known=None, pos=None):
                     store[n] = '#5F9EA0'
                 else:
                     store[n] = color[c_name]
+                    
         return store
     
     # map the nodes to their community color
@@ -139,15 +304,20 @@ def compare_methods(graph, param, known=None, pos=None):
         options[key] = get_color({}, options[key], overlap=overlap)
         
         
-    # mark nodes not in communities for Parallel Communities 
+    # mark nodes not in communities
     for n in graph.nodes():
-        if n not in options['Parallel Communities']:
-            options['Parallel Communities'][n] = 'k'        
+        for key in options:
+            if n not in options[key]:
+                options[key][n] = 'k'
         
     if pos == None:
         pos = nx.spring_layout(graph)
         
-    nodes = graph.nodes()        
+    nodes = graph.nodes()   
+    key_label = {'Known Communities':'known',
+                 'Modularity Communities':'module',
+                 'Linearity Communities':'linear',
+                 'Parallel Communities':'parallel'}
     for key, colors in options.iteritems():
         fig = plt.figure()
         ax = fig.add_subplot(111)
@@ -161,6 +331,6 @@ def compare_methods(graph, param, known=None, pos=None):
                 edge_color='#5F9EA0')
         ax.set_title(key, fontsize=28)
         plt.show()
-        plt.savefig(key + '.eps')
-        plt.savefig(key + '.pdf')
+        plt.savefig(prefix + key_label[key] + '.eps')
+        plt.savefig(prefix + key_label[key] + '.pdf')
         

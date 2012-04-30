@@ -31,7 +31,7 @@ def distant_seeds(graph, method='mod', min_size=4):
         clique = gen_cliques.next()
         while more:
             if len(clique)>= clique_size:
-                print "     found seed", len(seeds), graph.number_of_nodes()
+                #print "     found seed", len(seeds), graph.number_of_nodes()
                 more = False
                 possibleseeds = local_seed_communities(graph,
                                                        clique,
@@ -148,7 +148,7 @@ def core_seeds(graph, ithresh, csize, method='mod'):
             print count, " out of ", len(cores), " cores considered," + \
                   "and covered", len(accounted), " nodes.  Used "+\
                   str(used), " cores down to a size of ", len(core)
-        if len(accounted.intersection(set(core))) < .05 * len(core):
+        if len(accounted.intersection(set(core))) < .3 * len(core):
             #accounted.update(core)
             used += 1
             

@@ -7,7 +7,7 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 
-def expand_all(graph, seeds):
+def expand_all(graph, seeds, forced=0):
     """Expands all seeds within the graph
     """
     found_c = []
@@ -18,9 +18,11 @@ def expand_all(graph, seeds):
     found_order = []
     
     for s in seeds:
+        maxit = min(150, graph.number_of_nodes()/30.)
         c, cand, order, stat_hist, sd_hist, closure_hist = expand(graph,
                                                                   s,
-                                                                  600)
+                                                                  maxit,
+                                                                  forced=forced)
         found_c.append(c)
         found_cand.append(cand)
         found_order.append(order)
@@ -28,13 +30,13 @@ def expand_all(graph, seeds):
         found_sd.append(sd_hist)
         found_closure.append(closure_hist)
             
-        if len(found_c) % 10 == 0:
+        if len(found_c) % 100 == 0:
             print "completed ", len(found_c), " expansions out of ", len(seeds)
         
     return found_c, found_cand, found_order, found_stat, found_sd, found_closure
         
 
-def expand(graph, subset, maxit, forced=False):
+def expand(graph, subset, maxit, forced=True):
     """Expands the given subset with the more likely determined by 
     Parameters
     ----------
@@ -75,7 +77,7 @@ def expand(graph, subset, maxit, forced=False):
             else:
                 m = cand.get_forced()
                 if m == None:
-                    print "Ran out of nodes."
+                    #print "Ran out of nodes."
                     break
            
         if forced or cs.is_candidate(cand.close[m]):
@@ -93,15 +95,14 @@ def expand(graph, subset, maxit, forced=False):
         closure_hist.append(closure(cs, cand))
             
         count += 1
-        if count % 500 == 0:
-            print count, closure(cs, cand)
                    
     cs, cand = cut_last_closure(graph, order, cs, cand, closure_hist)
     imp = cand.stat_import({'e':cs.bounds['min_e'], 'p':cs.bounds['min_p']})
+    """
     print "Finished in ", count, " steps."
     print "         With Closure: ", closure(cs, cand), " With ", len(cs.nodes), " nodes."
     print "         The standard deviation away for e is: ", imp['e'], " and p: ", imp['p']
-        
+    """
     return cs, cand, order, stat_hist, sd_hist, closure_hist
 
 

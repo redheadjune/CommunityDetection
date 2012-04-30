@@ -41,7 +41,7 @@ def create_dendogram_linear(graph, __A, __B, __C):
     """ Creates the dendogram according to the paper
     """
     delta = __B / 100.
-    temp_b = delta
+    temp_b = 0.
     nedges = 2. * graph.number_of_edges()
     
     bar = Bar(graph, nedges, __A, __B, __C)
@@ -76,6 +76,11 @@ def create_dendogram_linear(graph, __A, __B, __C):
             del(graph)
             graph = new_graph
             bar = Bar(graph, nedges, __A, temp_b, __C)
+            
+            print "Had another improvement with ", temp_b
+            (I, E, S) = bar.get_I_E_S()
+            print "    Now at I(S):", I, " E(S) ", E, " |S| ",S   
+            
         else:
             temp_b += delta
             changed = True
