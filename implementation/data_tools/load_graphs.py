@@ -6,6 +6,39 @@ import CommunityDetection as CD
 import random
 import networkx as nx
 
+def load_metis_partition(f_name, mapping=None):
+    """ Loads the partition created by metis
+    Parameters
+    ----------
+    f_name : the partition file created by metis
+    mapping : a mapping of order of node id to real node id
+    
+    Returns
+    -------
+    partitions : a dictionary of {community name : members}
+    
+    Note
+    ----
+    the members may have to mapped back, because metis does not maintain node id
+    """
+    p_file = open(f_name, 'rb')
+    
+    partition = {}
+    n_id = 1
+    for line in p_file:
+        c_id = int(line)
+        part = partition.get(c_id, [])
+        part.append(n_id)
+        partition[c_id] = part
+        n_id += 1
+        
+    if mapping:
+        for c_id, members in partition.iteritems():
+            partition[c_id] = [mapping[n_id] for n_id in members]
+
+    return partition  
+    
+
 def merge_graph(graphs, p):
     """Given a set of graphs, merges them, with the underlying connectivity p
     Parameters

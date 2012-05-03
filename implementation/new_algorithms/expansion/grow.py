@@ -19,6 +19,7 @@ def expand_all(graph, seeds, forced=0):
     
     for s in seeds:
         maxit = min(150, graph.number_of_nodes()/30.)
+        maxit = max(50, maxit)
         c, cand, order, stat_hist, sd_hist, closure_hist = expand(graph,
                                                                   s,
                                                                   maxit,
@@ -36,7 +37,7 @@ def expand_all(graph, seeds, forced=0):
     return found_c, found_cand, found_order, found_stat, found_sd, found_closure
         
 
-def expand(graph, subset, maxit, forced=True):
+def expand(graph, subset, maxit, forced=0):
     """Expands the given subset with the more likely determined by 
     Parameters
     ----------
@@ -70,6 +71,9 @@ def expand(graph, subset, maxit, forced=True):
     
     count = 0
     while (forced or closure(cs, cand) > 0) and count < maxit:
+        if closure(cs, cand) == 0:
+            forced -= 1
+        
         m = cand.get_best()
         if m == None:
             if not forced:

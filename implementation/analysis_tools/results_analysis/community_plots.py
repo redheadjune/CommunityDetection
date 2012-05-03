@@ -35,7 +35,7 @@ def gen_overlap_fig(communities, xticks, yticks, labels, name, colors):
     ax.set_title('Communities a Node belongs to.', fontsize=24)
     ax.set_ylabel('Number of Nodes', fontsize=24)
     ax.set_xlabel('Number of Communities', fontsize=24)
-    ax.set_xlim([0, max(xticks)])
+    ax.set_xlim([0, max([max(b) for b in belongs])])
     ax.set_ylim([0, max(yticks)])
     plt.xticks(xticks, xticks)
     plt.yticks(yticks, yticks)
@@ -58,7 +58,7 @@ def gen_csize_fig(xticks, yticks, data, labels, name, colors):
     fig = plt.figure()
     ax = fig.add_subplot(111)
     bins = ax.hist(data,
-                   200,
+                   20,
                    color=colors,
                    label=labels,
                    normed=True)
@@ -69,7 +69,7 @@ def gen_csize_fig(xticks, yticks, data, labels, name, colors):
     ax.set_xlim(0, max(xticks))
     ax.set_ylim(0, max(yticks))
     plt.xticks(xticks, xticks)
-    plt.yticks(yticks, yticks)
+    plt.yticks([], [])
     plt.show()
     plt.savefig(name + '_csize.eps')
     plt.savefig(name + '_csize.pdf')
@@ -87,36 +87,30 @@ def gen_relativity_analysis():
     """ Generates all figures in ch5 for the relativity coauthor network
     """
     rgraph = CD.coauthor_relativity()
-    rparam = [1., 5., 5./2694., 3, 4, .8]
-    roptions = CD.all_detection_methods(rgraph, param=rparam)  
+    rparam = [1., 5., 5./2694., 3, 10, .8]
+    rpath = "CommunityDetection/implementation/data/CollaborationNetworks/" +\
+             "metis/relativity_metis"
+    roptions = CD.all_detection_methods(rgraph,
+                                        param=rparam,
+                                        path=rpath)  
     
-    find_coauthor_communities(rgraph,
-                              rparam,
-                              'Modularity Communities',
-                              24,
-                              'relativity_24_',
-                              roptions)
-    find_coauthor_communities(rgraph,
-                              rparam,
+    vis_coauthor_communities(rgraph,
                               'Modularity Communities',
                               29,
                               'relativity_29_',
-                              roptions)
-    gen_csize_fig([0, 40, 80],
-                  [0, 30, 60],
-                  [filter(lambda a: a<100, [len(c) for c in roptions[key]])
-                   for key in ['Linearity Communities',
-                               'Parallel Communities']],
-                   ['Linearity', 'Parallel'],
-                   'relativity_linear_parallel',
-                   ['r', 'k'])
-              
+                              roptions,
+                              0,
+                              .75)
     gen_csize_fig([0, 100, 200],
-                  [0, 5],
-                  [len(c) for c in roptions['Modularity Communities']],
-                  ['Modularity'],
-                  'relativity_module',
-                  ['b'])
+                  [0, .05, .1],
+                  [[len(c) for c in roptions[key]]
+                   for key in ['Linearity Communities',
+                               'Parallel Communities',
+                               'Metis Communities',
+                               'Modularity Communities']],
+                   ['Linearity', 'Parallel', 'Metis', 'Modularity'],
+                   'relativity_',
+                   ['r', 'k', 'b', 'g'])
     
     gen_overlap_fig([roptions['Linearity Communities'],
                      roptions['Parallel Communities']],
@@ -155,25 +149,30 @@ def gen_cond_analysis():
     return coptions
     
 
-def find_coauthor_communities(graph, param, source, i, prefix, options=None):
+def vis_coauthor_communities(graph, source, i, prefix, options, radius, overlap):
     """ Finds the communities produced by different methods for the astro
     citation network
-    """
-    if options == None:
-        options = CD.all_detection_methods(graph, param=param)
-    
-    interest = CD.get_ball(graph, options[source][i], 0)
+    """    
+    interest = CD.get_ball(graph, options[source][i], radius)
     print "Displaying and computing for a subset of ", len(interest), " nodes."
     sgraph = nx.subgraph(graph, interest)
     
     cleaned = {}
-    for key in options:
+    for key in options.keys():
+        """ for generating sub community structure
+        if key == source:
+            # split the overarching with the substructure
+            cleaned[source] = [options[source][i]]
+            options['Parallel Subcommunities'] = options[source][:i]
+            options['Parallel Subcommunities'].extend(options[source][i+1:])
+            key = 'Parallel Subcommunities'
+        """
         filtered = [filter(lambda n: n in interest, c) for c in options[key]]
         filtered = filter(lambda c: len(c) > 0, filtered)
         cleaned[key] = filtered
-        cleaned[key] = CD.clean_of_duplicate_c(cleaned[key])
+        cleaned[key] = CD.clean_of_duplicate_c(cleaned[key], overlap=overlap)
 
-    compare_methods(sgraph, param, prefix, options=cleaned)
+    compare_methods(sgraph, prefix, options=cleaned)
     
 
 def find_karate_communities():
@@ -183,10 +182,11 @@ def find_karate_communities():
     kgraph = CD.karate_club_graph()
     known = CD.karate_known_c()
     compare_methods(kgraph,
-                    [1., 5., 3.5/34., 3, 0, .55],
                     'karate_',
+                    param=[1., 5., 3.5/34., 3, 0, .55],
                     known=known, 
-                    color_map={27:0, 1:2, 17:3, 25:4})
+                    color_map={27:0, 1:2, 17:3, 25:4},
+                    data_path="KarateClub/karate_metis")
     
     
 def why_parallel_karate():
@@ -242,26 +242,36 @@ def find_football_communities():
             pos[n] = place + np.array([off_x, off_y])
     
     compare_methods(fgraph,
-                    [1., 1., 5./115., 4, 0, .7],
                     'football_',
+                    param=[1., 1., 5./115., 4, 0, .7],
                     known=known,
                     pos=pos,
                     color_map={76:1, 11:2, 7:3, 102:4, 104:5, 47:6, 98:7,
-                               96:8, 23:9, 94:10, 27:0})
+                               96:8, 23:9, 94:10, 27:0},
+                    data_path="FootballGames/football_metis")
     
     
-def compare_methods(graph, param, prefix, known=None, pos=None,
-                    color_map={}, options=None):
+def compare_methods(graph, prefix, param=None, known=None, pos=None,
+                    color_map={}, options=None, data_path=None):
     """ Given the graph compares all detection methods
     Parameter
     ---------
     graph : a networkx graph
     param : the parameters of [a, b, c, min_seed_size]
+    prefix : the filename to save variations with
     known : a list of communities if known
+    pos : a dictionary of node positions for graphing
+    color_map : a dictionary of node colors
+    options : if the communities have already been computed input here
+    data_path : the path within the data folder to store metis output
     
+    Notes
+    -----
+    Presumes this code is run from the parent directory of CommunityDetection
     """
     if options == None:
-        options = CD.all_detection_methods(graph, param=param)
+        path = "CommunityDetection/implementation/data/" + data_path
+        options = CD.all_detection_methods(graph, param=param, path=path)
         
     if known != None:
         options['Known Communities'] = known
@@ -271,7 +281,7 @@ def compare_methods(graph, param, prefix, known=None, pos=None,
              '#D2B48C', '#8B0000', 'b']
 
     def get_color(store, communities, overlap=[]):
-        offset = 0
+        offset = 1
         for c in communities:
             c_name = None
             for n in c:
@@ -317,7 +327,9 @@ def compare_methods(graph, param, prefix, known=None, pos=None,
     key_label = {'Known Communities':'known',
                  'Modularity Communities':'module',
                  'Linearity Communities':'linear',
-                 'Parallel Communities':'parallel'}
+                 'Parallel Communities':'parallel',
+                 'Metis Communities':'metis',
+                 'Parallel Subcommunities':'subparallel'}
     for key, colors in options.iteritems():
         fig = plt.figure()
         ax = fig.add_subplot(111)

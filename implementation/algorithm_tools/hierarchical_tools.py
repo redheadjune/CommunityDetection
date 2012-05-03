@@ -52,6 +52,7 @@ def clean_of_duplicate_c(communities, overlap=0.9):
                 to_store.append(c)
                 
                 
+    communities.sort(key=lambda n: len(n), reverse=True)
     unique_forward = [communities[0]]
     check_against(communities, unique_forward)
     unique_forward.reverse()

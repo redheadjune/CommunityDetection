@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+
+import networkx as nx
+
 """
 This module can determine the metric value of communities and
 sets of communities.
@@ -7,64 +10,43 @@ It is meant to be used to test the merits of different methods
 of finding communities.
 """
 
-"""
-# Commenting out code for stability until remove completely
+def m_precision(graph, communities):
+    """ Given a graph and communities compute the precision
+    """
+    pass
 
+
+
+def m_avg_diameter(graph, communities):
+    """ Finds the average diameter of the communities
+    """
+    diameters = []
+    for c in communities:
+        sgraph = nx.subgraph(graph, c)
+        try:
+            diameters.append(nx.diameter(sgraph))
+        except:
+            pass
+
+    print "Max diameter: ", max(diameters), "Min Diameter: ", min(diameters)
+    return sum(diameters) / float(len(diameters))
+
+def m_ncp(graph, communities):
+    """ Finds the network community profile - the conductance of every community
+    and then maxed per size.
+    """
+    ncp_values = []
+    for c in communities:
+        ncp_values.append( (len(c), m_conductance(graph, c)) )
     
+    best_k = {}
+    for i in range(max([len(c) for c in communities])):
+        possible = filter(lambda (k, n): k == i, ncp_values)
+        if possible != []:
+            best_k[i] = min([n for (k, n) in possible])
             
-def linear_set(S, G, param):
-    Compute the linear metric value of a set of communities.
-        
-        Parameters
-        ----------
-        S: a list of subsets of nodes
-        G: a networkx undirected, unweighted graph, with no self-loops
-        param = (a, b, c): the relative weighting of I, E, and |S|
-        
-        Returns
-        -------
-        I: the internal density of C
-        E: the external density of C
-        mag_S: the number of communities
-        M: the measure of C, given param
-
-        Raises
-        ------
-        IOException: if any inputs are incorrectly formed
+    return best_k
     
-    int_edge_count = 0
-    ext_edge_count = 0
-    
-    edges = {}
-    for n in G.nodes():
-        edges[n] = G.neighbors(n)
-        
-    for C in S:
-        for n in C:
-            for m in G.neighbors(n):
-                if m in C:
-                    int_edge_count += 1
-                    
-                    if m in edges[n]:
-                        edges[n].remove(m)
-                        edges[m].remove(n)
-                    
-    # now edges contains only edges external to every community
-    ext_edge_count = sum([len(neighbors) for neighbors in edges.values()]) / 2
-    
-    E = ext_edge_count / float(G.number_of_edges())
-    
-    ideal_I = sum([len(C) * (len(C) - 1) for C in S])
-    
-    if ideal_I == 0:
-        I = 1.
-    else:
-        I = int_edge_count / float(ideal_I)
-        
-    (a, b, c) = param
-    return I, E, len(S), (a * I - b * E - c * len(S))
-    
-"""
 
 def m_linearity_single(graph, seed, param):
     """ Computes the linearity of the seed. Presumes that

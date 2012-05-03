@@ -1,0 +1,7 @@
+/Users/june/Desktop/Communities/CommunityDetection/implementation/known_algorithms/metis-5.0.2/lib/libmetis.a
+/Users/june/Desktop/Communities/CommunityDetection/implementation/known_algorithms/metis-5.0.2/bin/gpmetis
+/Users/june/Desktop/Communities/CommunityDetection/implementation/known_algorithms/metis-5.0.2/bin/ndmetis
+/Users/june/Desktop/Communities/CommunityDetection/implementation/known_algorithms/metis-5.0.2/bin/mpmetis
+/Users/june/Desktop/Communities/CommunityDetection/implementation/known_algorithms/metis-5.0.2/bin/m2gmetis
+/Users/june/Desktop/Communities/CommunityDetection/implementation/known_algorithms/metis-5.0.2/bin/graphchk
+/Users/june/Desktop/Communities/CommunityDetection/implementation/known_algorithms/metis-5.0.2/bin/cmpfillin

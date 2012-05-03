@@ -1,9 +1,18 @@
 
 import CommunityDetection as CD
 import networkx as nx
+import os
 
-def all_detection_methods(graph, param=None):
+def all_detection_methods(graph, param=None, path=None):
     """ Takes a graph and returns all results
+    
+    Parameters
+    ----------
+    param : an array of [a, b, c, min_degree, force_steps, ithresh]
+          : (a,b,c) are the parameters for linearity
+          : core_size, is the minimum clique to begin with
+          : force_steps, is how many steps to force in grow
+          : ithresh is the internal threshold for a seed
     """
     found = {}
     
@@ -34,5 +43,18 @@ def all_detection_methods(graph, param=None):
     communities = all_info[0]
     found['Parallel Communities'] = [c.nodes.keys() for c in communities]
     print "Finished Parallel"
+    
+    # Find the communities from Metris
+    if path:
+        k = str(len(found["Linearity Communities"])/2)
+        mapping = CD.write_metis_format(graph, path)
+        # execute metis
+        os.system("./CommunityDetection/implementation/known_algorithms/" +
+                  "metis-5.0.2/bin/gpmetis " + path + " " + k)
+        r_mapping = {}
+        for n, n_id in mapping.iteritems():
+            r_mapping[n_id] = n
+        part = CD.load_metis_partition(path + ".part." + k, r_mapping)
+        found["Metis Communities"] = part.values()
     
     return found

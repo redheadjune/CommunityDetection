@@ -1,0 +1,7 @@
+/Users/june/Desktop/Communities/CommunityDetection/implementation/known_algorithms/metis-5.0.2/build/Darwin-x86_64/programs/CMakeFiles/cmpfillin.dir
+/Users/june/Desktop/Communities/CommunityDetection/implementation/known_algorithms/metis-5.0.2/build/Darwin-x86_64/programs/CMakeFiles/gpmetis.dir
+/Users/june/Desktop/Communities/CommunityDetection/implementation/known_algorithms/metis-5.0.2/build/Darwin-x86_64/programs/CMakeFiles/graphchk.dir
+/Users/june/Desktop/Communities/CommunityDetection/implementation/known_algorithms/metis-5.0.2/build/Darwin-x86_64/programs/CMakeFiles/m2gmetis.dir
+/Users/june/Desktop/Communities/CommunityDetection/implementation/known_algorithms/metis-5.0.2/build/Darwin-x86_64/libmetis/CMakeFiles/metis.dir
+/Users/june/Desktop/Communities/CommunityDetection/implementation/known_algorithms/metis-5.0.2/build/Darwin-x86_64/programs/CMakeFiles/mpmetis.dir
+/Users/june/Desktop/Communities/CommunityDetection/implementation/known_algorithms/metis-5.0.2/build/Darwin-x86_64/programs/CMakeFiles/ndmetis.dir
