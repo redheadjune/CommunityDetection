@@ -22,15 +22,18 @@ def all_detection_methods(graph, param=None, path=None):
     print "Finished Modularity"
     
     # Find the linearity communities
-    dendo = CD.create_dendogram_linear(graph, param[0], param[1], param[2])
-    lin_part = CD.partition_at_level(dendo, len(dendo) - 1)
-    lin_sets = CD.part_to_sets(lin_part)
-    lin_sets = [set(c) for c in lin_sets]
-    found['Linearity Communities'] = CD.linear_expand(graph,
-                                          lin_sets,
-                                          param[0],
-                                          param[1],
-                                          param[2])
+    if param[0] == 0:
+        found['Linearity Communities'] = [graph.nodes()]
+    else:
+        dendo = CD.create_dendogram_linear(graph, param[0], param[1], param[2])
+        lin_part = CD.partition_at_level(dendo, len(dendo) - 1)
+        lin_sets = CD.part_to_sets(lin_part)
+        lin_sets = [set(c) for c in lin_sets]
+        found['Linearity Communities'] = CD.linear_expand(graph,
+                                              lin_sets,
+                                              param[0],
+                                              param[1],
+                                              param[2])
     print "Finished Linearity"
     
     # Find the communities in parallel
@@ -39,14 +42,15 @@ def all_detection_methods(graph, param=None, path=None):
     else:
         seeds = CD.distant_seeds(graph, min_size=param[3])
         
-    all_info = CD.expand_all(graph, seeds, param[4])
+    all_info = CD.expand_all(graph, seeds, param[4], param[6])
     communities = all_info[0]
     found['Parallel Communities'] = [c.nodes.keys() for c in communities]
     print "Finished Parallel"
     
     # Find the communities from Metris
     if path:
-        k = str(len(found["Linearity Communities"])/2)
+        k = str(max(len(found["Linearity Communities"])/2,
+                    len(found["Parallel Communities"])/2))
         mapping = CD.write_metis_format(graph, path)
         # execute metis
         os.system("./CommunityDetection/implementation/known_algorithms/" +
@@ -56,5 +60,7 @@ def all_detection_methods(graph, param=None, path=None):
             r_mapping[n_id] = n
         part = CD.load_metis_partition(path + ".part." + k, r_mapping)
         found["Metis Communities"] = part.values()
+        
+    print "Finished Metris"
     
     return found

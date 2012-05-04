@@ -7,7 +7,7 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 
-def expand_all(graph, seeds, forced=0):
+def expand_all(graph, seeds, forced=0, maxit=-1):
     """Expands all seeds within the graph
     """
     found_c = []
@@ -18,8 +18,10 @@ def expand_all(graph, seeds, forced=0):
     found_order = []
     
     for s in seeds:
-        maxit = min(150, graph.number_of_nodes()/30.)
-        maxit = max(50, maxit)
+        if maxit < 0:
+            maxit = min(150, graph.number_of_nodes()/30.)
+            maxit = max(50, maxit)
+            
         c, cand, order, stat_hist, sd_hist, closure_hist = expand(graph,
                                                                   s,
                                                                   maxit,

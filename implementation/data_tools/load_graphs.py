@@ -3,8 +3,32 @@
 from constants import *
 
 import CommunityDetection as CD
+import datetime
 import random
 import networkx as nx
+
+def load_archivex_dates():
+    """ Loads the Dates of the archivex papers
+    """
+    try:
+        dfile = open(DATA_PATH_1 + PHYSICS_PAPER_DATES, 'rb')
+    except:
+        dfile = open(DATA_PATH_2 + PHYSICS_PAPER_DATES, 'rb')
+        
+    dates = {}
+    for line in dfile:
+        line = line[:-1]
+        (n, d) = line.split(' ')
+        n = int(n)
+        (y, m, d) = d.split('-')
+        y = int(y)
+        m = int(m)
+        d = int(d)
+        dates[n] = datetime.date(y, m, d)
+        dates[n] = dates[n].toordinal()
+        
+    return dates    
+
 
 def load_metis_partition(f_name, mapping=None):
     """ Loads the partition created by metis

@@ -7,7 +7,7 @@ def create_heirarchical_community_graph(graph, communities, overlap=.7):
     """ Creates the graph
     """
     print "Starting with ", len(communities), " Communities."
-    communities = clean_of_duplicate_c(communities)
+    communities = clean_of_duplicate_c(communities, .3)
     print "Cleaned to ", len(communities), " Communities."
     
     heir_graph = nx.Graph()
@@ -24,7 +24,7 @@ def create_heirarchical_community_graph(graph, communities, overlap=.7):
     for i in heir_graph.nodes():
         heir_graph.remove_edge(i, i)
     
-    return heir_graph 
+    return communities, heir_graph 
 
 
 def clean_of_duplicate_c(communities, overlap=0.9):
@@ -46,9 +46,11 @@ def clean_of_duplicate_c(communities, overlap=0.9):
     
     def check_against(to_check, to_store):
         for c in to_check:
-            seen = max([len(cs.intersection(c)) / float(len(c))
+            seen = max([len(cs.intersection(c)) / float(len(cs.union(c)))
                         for cs in to_store])
-            if seen < overlap:
+            if 1 - overlap < seen < 1 + overlap:
+                pass
+            else:
                 to_store.append(c)
                 
                 

@@ -4,6 +4,7 @@ import CommunityDetection as CD
 import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
+import pickle
 
 def gen_overlap_fig(communities, xticks, yticks, labels, name, colors):
     """ Generates a histogram to represent the number of communities each node
@@ -58,7 +59,7 @@ def gen_csize_fig(xticks, yticks, data, labels, name, colors):
     fig = plt.figure()
     ax = fig.add_subplot(111)
     bins = ax.hist(data,
-                   20,
+                   30,
                    color=colors,
                    label=labels,
                    normed=True)
@@ -85,6 +86,7 @@ def gen_paper_fig_ch5():
     
 def gen_relativity_analysis():
     """ Generates all figures in ch5 for the relativity coauthor network
+    To get subcommunities, uncomment code in vis_coauthoer_communities
     """
     rgraph = CD.coauthor_relativity()
     rparam = [1., 5., 5./2694., 3, 10, .8]
@@ -94,13 +96,20 @@ def gen_relativity_analysis():
                                         param=rparam,
                                         path=rpath)  
     
-    vis_coauthor_communities(rgraph,
-                              'Modularity Communities',
-                              29,
-                              'relativity_29_',
-                              roptions,
-                              0,
-                              .75)
+    keys = ['Modularity Communities', 'Linearity Communities',
+            'Parallel Communities', 'Modularity Communities',
+            'Modularity Communities']
+    c_id = [24, 108, 319, 10, 3]
+    
+    for i in []: #range(len(c_id)):
+        vis_coauthor_communities(rgraph,
+                                  keys[i],
+                                  c_id[i],
+                                  'relativity_' + str(c_id[i]) + '_',
+                                  roptions,
+                                  0,
+                                  .75)
+                              
     gen_csize_fig([0, 100, 200],
                   [0, .05, .1],
                   [[len(c) for c in roptions[key]]
@@ -126,27 +135,72 @@ def gen_cond_analysis():
     """ Generates all figures for the condensed matter network
     """
     cgraph = CD.coauthor_cond()
-    cparam = [1., 1., 5./16966., 5, -1, .6]
-    coptions = CD.all_detection_methods(cgraph, param=cparam)
+    cparam = [1., 1., 5./16966., 4, 10, .8]
+    cpath = "CommunityDetection/implementation/data/CollaborationNetworks/" +\
+             "metis/condensed_metis"
+    coptions = CD.all_detection_methods(cgraph, param=cparam, path=cpath)
 
-    gen_csize_fig([0, 50, 100],
-                  [0, .07],
+    gen_csize_fig([0, 40, 80],
+                  [0, .03],
                   [[len(c) for c in coptions[key]]
                    for key in ['Linearity Communities',
                                'Parallel Communities',
-                               'Modularity Communities']],
-                   ['Linearity', 'Parallel', 'Modularity'],
+                               'Modularity Communities',
+                               'Metis Communities']],
+                   ['Linearity', 'Parallel', 'Modularity', 'Metis'],
                    'cond_',
-                   ['r', 'k', 'b'])
+                   ['r', 'k', 'b', 'g'])
     
     gen_overlap_fig([coptions['Linearity Communities'],
                      coptions['Parallel Communities']],
-                    [0, 15, 30],
+                    [0, 15, 20],
                     [0, 250, 500],
                     ['Linear', 'Parallel'],
                     'cond_linear_parallel',
                     ['r', 'k'])    
     return coptions
+
+
+def gen_archivex():
+    """ Generates the plots corresponding to the physics archivx
+    """
+    pgraph = CD.physics_citations()
+    pparam_big = [0., 0., 1/30000., 5, 200, .8, 900]
+    ppath = "CommunityDetection/implementation/data/" +\
+             "PhysicsArchive/archivx_metis"
+    poptions_big = CD.all_detection_methods(pgraph, pparam_big, ppath)
+    
+    pf = open('big_c_physics_2', 'wb')
+    pickle.dump(poptions_big, pf)
+    pf.close()
+    """
+    pparam_small = [0., 0., 1/30000., 3, 20, .8, 100] 
+    poptions_small = CD.all_detection_methods(pgraph, pparam_small, ppath)
+    
+    pf = open('small_c_physics', 'wb')
+    pickle.dump(poptions_small, pf)
+    pf.close()    
+    
+    gen_csize_fig([0, 40, 80],
+                  [0, .03],
+                  [[len(c) for c in poptions[key]]
+                   for key in ['Linearity Communities',
+                               'Parallel Communities',
+                               'Modularity Communities',
+                               'Metis Communities']],
+                   ['Linearity', 'Parallel', 'Modularity', 'Metis'],
+                   'archivx_',
+                   ['r', 'k', 'b', 'g'])
+    gen_overlap_fig([poptions['Linearity Communities'],
+                     poptions['Parallel Communities']],
+                    [0, 15, 20],
+                    [0, 250, 500],
+                    ['Linear', 'Parallel'],
+                    'archivex_linear_parallel',
+                    ['r', 'k'])    
+    """
+    
+    return poptions_big #, poptions_small
     
 
 def vis_coauthor_communities(graph, source, i, prefix, options, radius, overlap):
@@ -160,13 +214,14 @@ def vis_coauthor_communities(graph, source, i, prefix, options, radius, overlap)
     cleaned = {}
     for key in options.keys():
         """ for generating sub community structure
+        """
         if key == source:
             # split the overarching with the substructure
             cleaned[source] = [options[source][i]]
             options['Parallel Subcommunities'] = options[source][:i]
             options['Parallel Subcommunities'].extend(options[source][i+1:])
             key = 'Parallel Subcommunities'
-        """
+        
         filtered = [filter(lambda n: n in interest, c) for c in options[key]]
         filtered = filter(lambda c: len(c) > 0, filtered)
         cleaned[key] = filtered

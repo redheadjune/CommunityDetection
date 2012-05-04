@@ -76,7 +76,7 @@ def vis_e_p(graph,
             cs,
             cand,
             desired=[],
-            title="Community under Properties $X_p$ and $X_e$."):
+            title="Community under Properties $\chi_p$ and $\chi_e$."):
     """ Plots the layout of the nodes in terms of E(n, Cs) and P(n, Cs)
     
     Parameters
@@ -132,9 +132,9 @@ def vis_e_p(graph,
     
     # format
     ax.set_xlim(0, 1.01)
-    ax.set_title(title, size='medium')
-    ax.set_xlabel("$X_p(n, C)$  percentage of edges in C", size='medium')
-    ax.set_ylabel("$X_e(n, C)$  number of edges in C", size='medium')
+    ax.set_title(title, fontsize=24)
+    ax.set_xlabel("$\chi_p(n, C)$  percentage of edges in C", fontsize=20)
+    ax.set_ylabel("$\chi_e(n, C)$  number of edges in C", fontsize=20)
 
     plt.show()
     
