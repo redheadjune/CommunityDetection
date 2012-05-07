@@ -72,7 +72,7 @@ def expand(graph, subset, maxit, forced=0):
     closure_hist = [closure(cs, cand)]
     
     count = 0
-    while (forced or closure(cs, cand) > 0) and count < maxit:
+    while (forced or closure(cs, cand) > 0) and (count < maxit):
         if closure(cs, cand) == 0:
             forced -= 1
         
@@ -83,13 +83,12 @@ def expand(graph, subset, maxit, forced=0):
             else:
                 m = cand.get_forced()
                 if m == None:
-                    #print "Ran out of nodes."
                     break
            
         if forced or cs.is_candidate(cand.close[m]):
             order.append(m)
             changed = cs.add_node(graph, m, cand.fringe)
-            cand.add_connectivity(changed)
+            cand.add_connectivity(changed, m)
             cand.remove_node(m)
         else:
             print "BUG (?) in EXPAND"
@@ -101,7 +100,7 @@ def expand(graph, subset, maxit, forced=0):
         closure_hist.append(closure(cs, cand))
             
         count += 1
-                   
+                
     cs, cand = cut_last_closure(graph, order, cs, cand, closure_hist)
     imp = cand.stat_import({'e':cs.bounds['min_e'], 'p':cs.bounds['min_p']})
     """

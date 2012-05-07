@@ -8,11 +8,12 @@ def all_detection_methods(graph, param=None, path=None):
     
     Parameters
     ----------
-    param : an array of [a, b, c, min_degree, force_steps, ithresh]
+    param : an array of [a, b, c, min_degree, force_steps, ithresh, max_it]
           : (a,b,c) are the parameters for linearity
           : core_size, is the minimum clique to begin with
           : force_steps, is how many steps to force in grow
           : ithresh is the internal threshold for a seed
+          : max_it is the maximum number of iterations for parallel
     """
     found = {}
     

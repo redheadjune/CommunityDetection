@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from properties import *
 from algorithms import *
+from properties import *
+from wiki_tests import *
 
-import properties
 import algorithms
+import properties
+import wiki_tests

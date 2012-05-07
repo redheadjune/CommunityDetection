@@ -6,6 +6,32 @@ import networkx as nx
 """ This module is for providing different ways of getting seed communities.
 """
 
+def weighted_seeds(graph, thresh=.5):
+    """ Takes a weighted graph and finds the seeds
+    Parameters
+    ----------
+    graph : a networkx graph
+    thresh : the threshold for an edge to be considered in a seed
+    
+    Returns
+    -------
+    seeds : a list of lists, where each is a seed
+    
+    Method
+    ------
+    creates a sparser graph at 0,1 depending on the threshold and uses existing
+    methods to find seeds
+    """
+    floored_graph = nx.Graph()
+    floored_graph.add_nodes_from(graph.nodes(), size=1.)
+    
+    for (u,v) in graph.edges():
+        if graph[u][v]['weight'] >= thresh:
+            floored_graph.add_edge(u,v, {'weight':1.})
+            
+    return distant_seeds(floored_graph, .49  , 4)
+
+
 def distant_seeds(graph, method='mod', min_size=4):
     """Finds seeds that are far apart in the graph
     Parameters

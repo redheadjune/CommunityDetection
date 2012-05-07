@@ -59,7 +59,7 @@ def gen_4_plots_sets(metric, overlap=False):
                   [1., 1., 5./float(graphs[1].number_of_nodes())],
                   [1., 5., 5./float(graphs[2].number_of_nodes())],
                   [1., 5., 10./float(graphs[3].number_of_nodes())]]
-    for i in range(2, 3):
+    for i in range(2):
         if overlap:
             fig = plt.figure(i+1)
             ax = fig.add_subplot(111)

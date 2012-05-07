@@ -1,5 +1,5 @@
-# Wikipedia elections
-(http://cs.stanford.edu/people/jure/pubs/triads-chi10.pdf). Data format:
+# Wikipedia elections 
+# (http://cs.stanford.edu/people/jure/pubs/triads-chi10.pdf). Data format:
 #   E: is election succesful (1) or not (0)
 #   T: time election was closed
 #   U: user id of editor that is being considered for promotion
@@ -36,4 +36,3 @@ V	1	21	2004-09-18 01:06:00
 V	1	22	2004-09-20 05:36:00
 V	1	23	2004-09-20 14:28:00
 V	1	24	2004-09-20 22:20:00
-

@@ -4,11 +4,131 @@ from constants import *
 
 import CommunityDetection as CD
 import datetime
-import random
 import networkx as nx
+import pickle
+import random
+
+def dolphins():
+    """ Loads the dolphin social graph
+    """
+    try:
+        gml_graph = nx.read_gml(DATA_PATH_1 + DOLPHINS)
+    except:
+        gml_graph = nx.read_gml(DATA_PATH_2 + DOLPHINS)
+        
+    dgraph = nx.Graph()
+    dgraph.add_nodes_from(gml_graph.nodes(), size=1.)
+    edges = gml_graph.edges()
+    edges = [(u, v, {'weight': 1.}) for (u,v) in edges]
+    dgraph.add_edges_from(edges)
+    return dgraph
+
+
+def wiki_voting():
+    """ Loads the wiki voting network
+    Returns
+    -------
+    wgraph : a networkx graph, with users as nodes and edges as similarity
+    e_outcome : a dictionary keys on election number and valued at whether or
+                not the election was successful
+    user_voting_record : a dictionary keyed on users and valued on a dictionary
+                         of the election they voted in to how they voted
+    
+    Method:
+    let each user have a vector representing how they voted, consisting of
+    -1, 0, 1
+    the edge weight is the jaccard measure, the dotproduct of the voting vetors
+    divided by the number of election one or the other of the users voted in
+    """
+    wgraph = nx.Graph()
+    
+    try:
+        wfile = open(DATA_PATH_1 + WIKI_VOTING, 'rb')
+    except:
+        wfile = open(DATA_PATH_2 + WIKI_VOTING, 'rb')   
+        
+    e_outcome = {}
+    user_voting_record = {}
+    user_nomination = {}
+    e_name = 0
+    
+    def add_user_vote(user, vote):
+        if user == -1:
+            return
+        
+        # adds the vote to the user record
+        if user not in user_voting_record:
+            user_voting_record[user] = {}
+            
+        user_voting_record[user][e_name] = vote 
+        
+    for line in wfile:
+        if line[0] != '#':
+            line = line[:-1]
+            if line[0] == 'E':
+                e_name += 1
+                (e, out) = line.split('\t')
+                e_outcome[e_name] = int(out)
+            elif line[0] == 'U':
+                (u, user) = line.split('\t')
+                user = int(user)
+                if user not in user_nomination:
+                    user_nomination[user] = []
+                user_nomination[user].append(e_name)
+            elif line[0] == 'N':
+                (n, user) = line.split('\t')
+                add_user_vote(int(user), 1)
+            elif line[0] == 'V':
+                (v, vote, user, time) = line.split('\t')
+                add_user_vote(int(user), int(vote))
+                
+    wfile.close()
+                
+    # now to add the edges in, not it is a symmetric graph, so consider only n>m
+    wgraph.add_nodes_from(user_voting_record.keys(), size=1.)
+    # adding edges
+    count = 0
+    edges = []
+    for n in wgraph.nodes():
+        for m in wgraph.nodes():
+            if m > n:
+                count += 1
+                if count % 1000000 == 0:
+                    print "through ", str(count)[:-6], "edges of 19 million"
+                score = jaccard(n, m, user_voting_record)
+                if score > .05:
+                    edges.append((n, m, {'weight':score}))
+                    
+    wgraph.add_edges_from(edges)
+                    
+    pf = open('05_graph_outcome_votes.pkl', 'wb')
+    pickle.dump(["wiki_graph with .05 threshold on edges, the election" +
+                 "outcomes and the user voting record, user nomiation, "+
+                 "generated with wiki_voting()", wgraph, e_outcome,
+                 user_voting_record, user_nomination], pf)
+    pf.close()
+    return wgraph, e_outcome, user_voting_record, user_nomination
+    
+    
+def jaccard(n, m, record):
+    """ Computes the dot product of n and m similarities divided by the number
+    of records either has participated in
+    """
+    votes = 0
+    one_votes = set(record[n].keys()).union(set(record[m].keys()))
+    both_vote = set(record[n].keys()).intersection(set(record[m].keys()))
+    for e in both_vote:
+        if e in record[n] and e in record[m]:
+            votes += record[n][e] * record[m][e]            
+        
+    return votes / float(len(one_votes))
+
 
 def load_archivex_dates():
     """ Loads the Dates of the archivex papers
+    Returns
+    ------
+    dates : a dictionary keyed on paper and valued at the ordinal date published
     """
     try:
         dfile = open(DATA_PATH_1 + PHYSICS_PAPER_DATES, 'rb')

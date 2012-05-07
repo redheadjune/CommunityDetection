@@ -35,18 +35,22 @@ class Community:
         for n in nodes:
             for m in graph.neighbors(n):
                 if m in nodes:
-                    self.nodes[m]['e'] += 1
+                    self.nodes[m]['e'] += 1 * graph[n][m]['weight']
                 else:
                     if m not in external_nodes:
                         external_nodes[m] = {'e':0}
                         
-                    external_nodes[m]['e'] += 1
+                    external_nodes[m]['e'] += 1 * graph[n][m]['weight']
 
         for n, spec in self.nodes.iteritems():
-            spec['p'] = spec['e'] / float(graph.degree(n))    
+            out_degree = sum([graph[n][m]['weight']
+                              for m in graph.neighbors(n)])
+            spec['p'] = spec['e'] / float(out_degree)    
 
         for n, spec in external_nodes.iteritems():
-            spec['p'] = spec['e'] / float(graph.degree(n))
+            out_degree = sum([graph[n][m]['weight']
+                              for m in graph.neighbors(n)])
+            spec['p'] = spec['e'] / float(out_degree)
             
         return external_nodes
     
@@ -114,8 +118,8 @@ class Community:
         changed = []
         for m in graph.neighbors(n):
             if m in self.nodes:
-                self.update_node(graph, m, 1)
-                self.nodes[n]['e'] += 1
+                self.update_node(graph, m, 1 * graph[n][m]['weight'])
+                self.nodes[n]['e'] += 1 * graph[n][m]['weight']
             else:
                 changed.append(m)
                 
@@ -140,7 +144,7 @@ class Community:
         changed = [n]
         for m in graph.neighbors(n):
             if m in self.nodes:
-                self.update_node(graph, m, -1)
+                self.update_node(graph, m, -1 * graph[n][m]['weight'])
             else:
                 changed.append(m)
                 
@@ -152,7 +156,8 @@ class Community:
         """Updates the node n's connectivity to the community by inc.
         """
         self.nodes[n]['e'] += inc
-        self.nodes[n]['p'] = self.nodes[n]['e'] / float(graph.degree(n))
+        out_degree = sum(graph[n][m]['weight'] for m in graph.neighbors(n))
+        self.nodes[n]['p'] = self.nodes[n]['e'] / float(out_degree)
         self.nodes[n]['reason'] = self.classification(self.nodes[n])
         
         

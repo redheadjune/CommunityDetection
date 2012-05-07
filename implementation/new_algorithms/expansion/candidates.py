@@ -180,7 +180,7 @@ class Candidates:
         reclassify : the set of nodes that were not candidates
         """
         best = None
-        prob = 1.
+        prob = 0.
         reclassify = {}
         for n, spec in data.iteritems():
             if not self.c.is_candidate(spec):
@@ -196,16 +196,18 @@ class Candidates:
         return best, reclassify    
         
         
-    def drop_connectivity(self, to_drop):
+    def drop_connectivity(self, to_drop, n):
         """Drops the connectivity of nodes in to_drop by 1 and reclassifies them
         """
-        self.change_connectivity(to_drop, -1)
+        for m in to_drop:
+            self.change_connectivity(to_drop, -1 * self.graph[n][m]['weight'])
         
         
-    def add_connectivity(self, to_inc):
+    def add_connectivity(self, to_inc, n):
         """Increases the connectivity of nodes in to_inc by 1 and reclassifies.
         """
-        self.change_connectivity(to_inc, 1)
+        for m in to_inc:
+            self.change_connectivity([m], self.graph[n][m]['weight'])
         
         
     def change_connectivity(self, to_change, inc):
@@ -263,7 +265,9 @@ class Candidates:
             self.update_stats(spec, add=False)
 
         spec['e'] += inc
-        spec['p'] = spec['e'] / float(self.graph.degree(n))
+        out_degree = sum([self.graph[n][m]['weight']
+                          for m in self.graph.neighbors(n)])
+        spec['p'] = spec['e'] / float(out_degree)
         self.update_stats(spec)
         
         

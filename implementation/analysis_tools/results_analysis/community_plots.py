@@ -89,7 +89,7 @@ def gen_relativity_analysis():
     To get subcommunities, uncomment code in vis_coauthoer_communities
     """
     rgraph = CD.coauthor_relativity()
-    rparam = [1., 5., 5./2694., 3, 10, .8]
+    rparam = [1., 5., 5./2694., 3, 10, .8, 200]
     rpath = "CommunityDetection/implementation/data/CollaborationNetworks/" +\
              "metis/relativity_metis"
     roptions = CD.all_detection_methods(rgraph,
@@ -135,7 +135,7 @@ def gen_cond_analysis():
     """ Generates all figures for the condensed matter network
     """
     cgraph = CD.coauthor_cond()
-    cparam = [1., 1., 5./16966., 4, 10, .8]
+    cparam = [1., 1., 5./16966., 4, 10, .8, 300]
     cpath = "CommunityDetection/implementation/data/CollaborationNetworks/" +\
              "metis/condensed_metis"
     coptions = CD.all_detection_methods(cgraph, param=cparam, path=cpath)
@@ -229,6 +229,16 @@ def vis_coauthor_communities(graph, source, i, prefix, options, radius, overlap)
 
     compare_methods(sgraph, prefix, options=cleaned)
     
+    
+def find_dolphin_communities():
+    """ Finds the communities produced by different methods for dolphins
+    """
+    dgraph = CD.dolphins()
+    compare_methods(dgraph,
+                    'dolphins_',
+                    param=[1., 5., 3.5/62., 3, 0, .55, 62],
+                    data_path="Dolphins/dolphins")
+    
 
 def find_karate_communities():
     """ Finds the communities produced by different methods
@@ -238,7 +248,7 @@ def find_karate_communities():
     known = CD.karate_known_c()
     compare_methods(kgraph,
                     'karate_',
-                    param=[1., 5., 3.5/34., 3, 0, .55],
+                    param=[1., 5., 3.5/34., 3, 0, .55, 34],
                     known=known, 
                     color_map={27:0, 1:2, 17:3, 25:4},
                     data_path="KarateClub/karate_metis")
@@ -298,7 +308,7 @@ def find_football_communities():
     
     compare_methods(fgraph,
                     'football_',
-                    param=[1., 1., 5./115., 4, 0, .7],
+                    param=[1., 1., 5./115., 4, 0, .7, 20],
                     known=known,
                     pos=pos,
                     color_map={76:1, 11:2, 7:3, 102:4, 104:5, 47:6, 98:7,
