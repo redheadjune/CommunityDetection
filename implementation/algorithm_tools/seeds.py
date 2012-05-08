@@ -6,7 +6,7 @@ import networkx as nx
 """ This module is for providing different ways of getting seed communities.
 """
 
-def weighted_seeds(graph, thresh=.5):
+def weighted_seeds(graph, thresh=.5, min_size=4):
     """ Takes a weighted graph and finds the seeds
     Parameters
     ----------
@@ -29,7 +29,7 @@ def weighted_seeds(graph, thresh=.5):
         if graph[u][v]['weight'] >= thresh:
             floored_graph.add_edge(u,v, {'weight':1.})
             
-    return distant_seeds(floored_graph, .49  , 4)
+    return distant_seeds(floored_graph, .49  , min_size)
 
 
 def distant_seeds(graph, method='mod', min_size=4):

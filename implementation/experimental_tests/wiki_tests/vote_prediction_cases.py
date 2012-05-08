@@ -10,7 +10,7 @@ def run_all_wiki(preknowledge=False):
     else:
         (wgraph, e_outcome, user_voting_record, user_nomination) = preknowledge
     
-    seeds = CD.weighted_seeds(wgraph, .49)
+    seeds = CD.weighted_seeds(wgraph, .49, 2)
     communities = CD.expand_all(wgraph, seeds, 20, 300)
     community_nodes = [c.nodes.keys() for c in communities[0]]
     
@@ -47,7 +47,8 @@ def run_all_wiki(preknowledge=False):
             if e_outcome[e] != 0:
                 beur_enforce.append(e)
                 
-    true_info = (true_e_votes, numeric_e_outcome, beur_enforce, beur_negate)
+    true_info = (true_e_votes, e_outcome, numeric_e_outcome, beur_enforce,
+                 beur_negate)
             
     # Predict how the elections turned out if more voted
     predicted_e_outcome = {}
@@ -111,7 +112,6 @@ def check_votes_agree(wgraph, communities, user_voting_record):
             else:
                 # had a comparable
                 guess = guess_n_vote(c_guess)
-                #guess = 1
                 if guess == None:
                     no_say += 1
                 elif guess == user_voting_record[n][e]:
@@ -186,6 +186,9 @@ def guess_c_vote(c_votes):
     for k, v in c_votes.iteritems():
         votes.extend([k]*v)
         
+    if len(votes) < 2:
+        return None
+        
     return get_popular_vote(votes)
     
     
@@ -201,6 +204,9 @@ def guess_n_vote(c_guess):
 def get_popular_vote(votes):
     """ Returns the most popular vote
     """
+    while None in votes:
+        votes.remove(None)
+    
     if len(votes) == 0:
         return None
     

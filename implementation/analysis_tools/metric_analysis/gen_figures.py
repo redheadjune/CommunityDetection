@@ -179,7 +179,11 @@ def gen_4_plots_single(metric):
                             ylim=ylim[i],
                             width = arrow_width[i])
         elif metric == "conductance":
-            CD.draw_ls("conductance", n_ls[i], 7, graphs[i].number_of_nodes(), 1)
+            CD.draw_ls("conductance",
+                       n_ls[i],
+                       7,
+                       graphs[i].number_of_nodes(),
+                       1)
             gen_path_single(graphs[i],
                             seeds[i],
                             names[i],

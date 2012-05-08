@@ -343,7 +343,7 @@ def compare_methods(graph, prefix, param=None, known=None, pos=None,
     
     color = ['#00FF00', '#00FFFF', '#FF1493', '#FFFF00', '#8A2BE2', '#FF7F50',
              '#FF00FF', '#F08080', '#BA55D3', '#00FA9A', '#A0522D',
-             '#D2B48C', '#8B0000', 'b']
+             '#D2B48C', '#8B0000', 'b', 'k', 'm', 'r', 'g', 'y', 'w']
 
     def get_color(store, communities, overlap=[]):
         offset = 1

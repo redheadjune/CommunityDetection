@@ -6,6 +6,25 @@ import matplotlib.pyplot as plt
 
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
+def create_community_candidates(graph, subset):
+    """ Creates the community and candidate corresponding to the subset
+    Parameters
+    ----------
+    graph : a networkx graph
+    subset : a list of nodes
+    
+    Returns
+    -------
+    cs : a Community corresponding to the subset nodes
+    cand : the coupled outside nodes
+    """
+    cs = CD.Community()
+    external_nodes = cs.init(graph, subset)
+    cand = CD.Candidates(graph, external_nodes, cs)
+    cs.init_bounds(cand)
+    cand.rework_fringe()
+    return cs, cand
+
 def vis_g_np_graph(graph, show_nodes, fig=None, color=None):
     """ Presumes the setup of 4 subgraphs, joined with 
     """
@@ -118,11 +137,11 @@ def vis_e_p(graph,
     want_nodes_p.extend([0. for i in range(len(w_nodes) - len(want_nodes))])
     
     # plot actual points
-    p1, = ax.plot(int_nodes_p, int_nodes_e, 'r.', markersize=10)
-    p2, = ax.plot(ext_nodes_p, ext_nodes_e, 'k.', markersize=10)
+    p1, = ax.plot(int_nodes_p, int_nodes_e, 'r.', markersize=40)
+    p2, = ax.plot(ext_nodes_p, ext_nodes_e, 'k.', markersize=40)
     if desired != []:
-        p3, = ax.plot(have_nodes_p, have_nodes_e, 'm.', markersize=10)
-        p4, = ax.plot(want_nodes_p, want_nodes_e, 'g.', markersize=10)
+        p3, = ax.plot(have_nodes_p, have_nodes_e, 'm.', markersize=40)
+        p4, = ax.plot(want_nodes_p, want_nodes_e, 'g.', markersize=40)
         
         ax.legend([p1, p2, p3, p4],
                   ["$C_s - C$", "$V - C$", "$C_s \cap C$", "$C - C_s$"],
@@ -140,8 +159,8 @@ def vis_e_p(graph,
     
     # include bounds
     ycap = ax.get_ylim()
-    ax.plot([bounds['min_p'], bounds['min_p']], ycap, '--', color='purple', alpha=.8, linewidth=3)
-    ax.plot(ax.get_xlim(), [bounds['min_e'], bounds['min_e']], '--', color='purple', alpha=.8, linewidth=3)
+    ax.plot([bounds['min_p'], bounds['min_p']], [0, bounds['min_e']], '--', color='purple', alpha=.8, linewidth=3)
+    ax.plot([0, bounds['min_p']], [bounds['min_e'], bounds['min_e']], '--', color='purple', alpha=.8, linewidth=3)
     
     if desired != []:    
         divider = make_axes_locatable(ax)

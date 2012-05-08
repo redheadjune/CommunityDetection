@@ -23,6 +23,43 @@ def hack_to_load():
     
     return p_com, small_c['Modularity Communities'], small_c['Metis Communities']
 
+def calc_cite_correlation(graph, communities, dates):
+    """ Calculates the number of communities a paper cites from and is cited by
+    """
+    outgoing = {}
+    incoming = {}
+    for n in graph.nodes():
+        outgoing[n] = filter(lambda m: dates[m] < dates[n], graph.neighbors(n))
+        incoming[n] = filter(lambda m: dates[m] > dates[n], graph.neighbors(n))
+        
+    n_to_c = {}
+    for n in graph.nodes():
+        n_to_c[n] = []
+        
+    c_name = 0
+    for c in communities:
+        c_name += 1
+        for n in c:
+            n_to_c[n].append(c_name)
+            
+    outgoing_to_c = {}
+    incoming_from_c = {}
+    for n in graph.nodes():
+        c_cited = []
+        for m in outgoing[n]:
+            c_cited.extend(n_to_c[m])
+        outgoing_to_c[n] = set(c_cited)
+        c_cited = []
+        for m in incoming[n]:
+            c_cited.extend(n_to_c[m])
+        incoming_from_c[n] = set(c_cited)
+        
+    nodes = graph.nodes()
+    return ([len(outgoing_to_c[n]) for n in nodes],
+            [len(incoming_from_c[n]) for n in nodes],
+            [len(incoming[n]) for n in nodes])
+        
+
 
 def plot_community_connectivity_impact(graph, par_com, mod_com, dates, sample):
     """Plots the correlation between number of communities a paper is cited by
@@ -153,10 +190,10 @@ def draw_time_communities(graph,
             node_color=[colored_nodes[n] for n in nodes],
             node_size=100,
             alpha=1.,
-            with_labels=True,
+            with_labels=False,
             width=.5,
             edge_color='#5F9EA0')
-    ax.set_title("Parallel Communities in a Time Setting", fontsize=28)
+    #ax.set_title("Parallel Communities in a Time Setting", fontsize=28)
     plt.show()
     plt.savefig(prefix + '.eps')
     plt.savefig(prefix + '.pdf')  
