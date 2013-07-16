@@ -208,7 +208,7 @@ def draw_ls(metric, n_ls, mag_C, mag_V, ylim, new_fig=False, L=0):
                 mag_C,
                 mag_V,
                 get_modularity_y(L),
-                lambda y: y > 0,
+                lambda y: y < 0,
                 "A Single Module's Level Sets")
     elif metric == "linearity":
         plot_ls([0, 1, 0, ylim],
@@ -436,7 +436,8 @@ def plot_ls(limits, f_corners, n_ls, mag_C, mag_V, f_metric, thresh, name, width
     [x0, x1, y0, y1] = limits
     corners = f_corners(mag_C, mag_V, limits[3])
     ls_min = min(corners)
-    ls_max = max(corners)
+    #ls_max = max(corners)
+    ls_max = 1
     dls = (ls_max - ls_min)/float(n_ls - 1)
     dx = (x1 - x0)/count
     x = [x0 + i*dx for i in range(int(count)+1)]

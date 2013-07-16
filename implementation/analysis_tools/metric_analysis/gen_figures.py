@@ -139,7 +139,7 @@ def gen_4_plots_single(metric):
             [0, .02],
             [0, .01]]
     k = [7/34., 7/115., 7/270., 7/1550.]
-    ab = [[1., 7.5], [1., 50.], [1., 250.], [1., 500.]]
+    ab = [[1., 7.5], [1., 50.], [1., 10.], [1., 500.]]
     #ab = [[1., 12.], [1., 35.], [1., 10.], [1., 1000.]]
     arrow_width = [0.01, 0.0025, 0.0007, 0.0005]
     #n_ls = [40, 160, 320, 640] # use for external
@@ -323,20 +323,21 @@ def add_single_benchmarks():
     ext = [(0.25, 0.0346), (0.4667, 0.0393), (0.0767, 0.0012), (0.4667, 0.0013)]
     cond = [(0.2339, 0.0351), (0.6889, 0.0438), (0.3679, 0.0014), (0.5929, 0.0002)]
     internal = [(1.0, .2151), (1.0, 0.0929), (1.0, 0.004), (1.0, 0.0008322)]
-    all_metrics = [vol, ext, cond, internal]
-    color = ['#00FF00', '#00FFFF', '#FF1493', '#FFFF00']
+    linear = [(0.417, 0.0756), (0.689, 0.0438), (0.1197, 0.0017), (0.9459, 0.0007)]
+    all_metrics = [vol, ext, cond, internal, linear]
+    color = ['#00FF00', '#00FFFF', '#FF1493', '#FFFF00', '#8A2BE2']
     for i in range(1, 5):
-        fig = plt.figure(i)
+        fig = plt.figure(i+4)
         ax = fig.add_subplot(111)
         plotted = []
-        for j in range(4):
+        for j in range(5):
             plotted.append(ax.plot(all_metrics[j][i-1][0],
                                    all_metrics[j][i-1][1],
                                    'd',
                                    color=color[j],
                                    markersize=15))
         ax.legend(plotted,
-                  ["Volume", "Cut Ratio", "Conductance", "Internal Density"],
+                  ["Volume", "Cut Ratio", "Conductance", "Internal Density", "Linear"],
                   loc=2)
         
     
